@@ -7,8 +7,14 @@ import { PolicyStep } from './steps/PolicyStep';
 import { QuizStep, type QuizResult } from './steps/QuizStep';
 import { ResultStep } from './steps/ResultStep';
 import { SimulatorStep } from './steps/SimulatorStep';
+import { VoicePicker } from './ui';
 
-const STEPS = ['La polizza', 'Quanto ne sai', 'Le garanzie', 'Quanto pago', 'Domande', 'Verifica'];
+const STEPS = ['La polizza', 'Quiz iniziale', 'Le garanzie', 'Quanto pago', 'Domande', 'Verifica finale'];
+const GROUPS = [
+  { title: 'Inizia', steps: [0, 1] },
+  { title: 'Esplora quando vuoi', steps: [2, 3, 4] },
+  { title: 'Alla fine', steps: [5] },
+];
 const FONT_SIZES = [19, 22, 25];
 
 export default function App() {
@@ -46,7 +52,7 @@ export default function App() {
     setPost(null);
   };
 
-  const reachable = (i: number) => i === 0 || (data !== null && (i === 1 || pre !== null));
+  const reachable = (i: number) => i === 0 || data !== null;
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
 
   return (
@@ -59,6 +65,8 @@ export default function App() {
             </p>
             <p className="text-gray-600">Capire la tua polizza salute, una cosa alla volta</p>
           </div>
+          <div className="flex flex-wrap items-center gap-4">
+          <VoicePicker />
           <div className="flex items-center gap-2" role="group" aria-label="Dimensione del testo">
             <span className="text-gray-600">Testo</span>
             {FONT_SIZES.map((_, i) => (
@@ -73,25 +81,33 @@ export default function App() {
               </button>
             ))}
           </div>
+          </div>
         </div>
-        <nav aria-label="Percorso" className="mx-auto max-w-6xl px-6 pb-4">
-          <ol className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {STEPS.map((s, i) => (
-              <li key={s}>
-                <button
-                  onClick={() => reachable(i) && setStep(i)}
-                  disabled={!reachable(i)}
-                  aria-current={i === step ? 'step' : undefined}
-                  className={`w-full rounded-lg border-b-4 px-2 py-2 text-left text-base ${
-                    i === step ? 'border-acn font-bold text-ink' : i < step ? 'border-acn-light text-gray-700' : 'border-gray-200 text-gray-500'
-                  } disabled:cursor-not-allowed`}
-                >
-                  <span className="block text-sm">{i + 1}</span>
-                  {s}
-                </button>
-              </li>
-            ))}
-          </ol>
+        <nav aria-label="Sezioni" className="mx-auto grid max-w-6xl gap-4 px-6 pb-4 md:grid-cols-[2fr_3fr_1fr]">
+          {GROUPS.map((g) => (
+            <div key={g.title}>
+              <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-gray-500">{g.title}</p>
+              <div className="flex gap-2">
+                {g.steps.map((i) => {
+                  const done = (i === 1 && pre) || (i === 5 && post);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => reachable(i) && setStep(i)}
+                      disabled={!reachable(i)}
+                      aria-current={i === step ? 'page' : undefined}
+                      className={`min-h-12 flex-1 rounded-lg border-b-4 px-3 py-2 text-left text-base ${
+                        i === step ? 'border-acn bg-acn/5 font-bold text-ink' : 'border-gray-200 text-gray-700 hover:border-acn-light'
+                      } disabled:cursor-not-allowed disabled:text-gray-400`}
+                    >
+                      {STEPS[i]}
+                      {done && <span className="ml-1 text-green-800" aria-label="fatto">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </header>
 
@@ -101,7 +117,7 @@ export default function App() {
           pre ? (
             <div className="space-y-4">
               <p className="text-xl">Hai già fatto il quiz iniziale: {pre.correct} su {pre.total}.</p>
-              <button className="text-lg text-acn-dark underline" onClick={next}>Vai alle garanzie →</button>
+              <button className="text-lg text-acn-dark underline" onClick={() => setStep(2)}>Vai alle garanzie →</button>
             </div>
           ) : (
             <QuizStep
@@ -118,14 +134,14 @@ export default function App() {
         {step === 2 && data && <CoverageStep policy={data.policy} checks={data.checks} onNext={next} />}
         {step === 3 && data && <SimulatorStep policy={data.policy} onNext={next} />}
         {step === 4 && data && <AskStep policy={data.policy} sourceText={data.sourceText} onNext={next} />}
-        {step === 5 && data && pre && (
+        {step === 5 && data && (
           post ? (
             <ResultStep pre={pre} post={post} onRestart={restart} />
           ) : (
             <QuizStep
               key="post"
               pool={pool}
-              exclude={pre.ids}
+              exclude={pre?.ids ?? []}
               reveal
               title="Verifica finale"
               intro="Adesso rispondi di nuovo. Questa volta ti dico subito se è giusto e perché."

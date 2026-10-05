@@ -38,6 +38,7 @@ export function QuizStep({
   const [level, setLevel] = useState<Level>(1);
   const [details, setDetails] = useState<QuizResult['details']>([]);
   const [selected, setSelected] = useState<number | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
   const [note, setNote] = useState<string | null>(null);
 
   const used = useMemo(() => new Set([...exclude, ...details.map((d) => d.id)]), [exclude, details]);
@@ -65,11 +66,11 @@ export function QuizStep({
   }
 
   const dontKnow = q.options.length;
-  const answered = selected !== null;
   const isCorrect = selected === q.correctIndex;
+  const isLast = details.length + 1 >= count;
 
-  const answer = (i: number) => {
-    if (answered) return;
+  const choose = (i: number) => {
+    if (confirmed) return;
     setSelected(i);
     setCurrent(q);
   };
@@ -81,8 +82,11 @@ export function QuizStep({
     setDetails((d) => [...d, { id: q.id, question: q.question, difficulty: q.difficulty, correct: ok }]);
     setLevel(nd);
     setSelected(null);
+    setConfirmed(false);
     setCurrent(undefined);
   };
+
+  const confirm = () => (reveal ? setConfirmed(true) : next());
 
   return (
     <Card>
@@ -101,40 +105,46 @@ export function QuizStep({
         <Speak text={`${q.question} ${q.options.join('. ')}`} />
       </div>
 
-      <div className="mt-6 grid gap-3">
+      <div className="mt-6 grid gap-3" role="radiogroup" aria-label="Risposte">
         {[...q.options, 'Non lo so'].map((opt, i) => {
           const chosen = selected === i;
           let style = 'border-gray-300 hover:border-acn';
-          if (answered && reveal && i === q.correctIndex) style = 'border-green-700 bg-green-50';
-          else if (answered && chosen && reveal) style = 'border-red-700 bg-red-50';
-          else if (answered && chosen) style = 'border-acn bg-acn/10';
+          if (confirmed && i === q.correctIndex) style = 'border-green-700 bg-green-50';
+          else if (confirmed && chosen) style = 'border-red-700 bg-red-50';
+          else if (chosen) style = 'border-acn bg-acn/10 ring-2 ring-acn';
           return (
             <button
               key={opt + i}
-              onClick={() => answer(i)}
-              disabled={answered}
-              className={`min-h-14 rounded-xl border-2 px-5 py-3 text-left text-lg ${i === dontKnow ? 'italic text-gray-600' : ''} ${style}`}
+              role="radio"
+              aria-checked={chosen}
+              onClick={() => choose(i)}
+              disabled={confirmed}
+              className={`flex min-h-14 items-center gap-3 rounded-xl border-2 px-5 py-3 text-left text-lg ${i === dontKnow ? 'italic text-gray-600' : ''} ${style}`}
             >
+              <span aria-hidden className={`h-6 w-6 shrink-0 rounded-full border-2 ${chosen ? 'border-acn bg-acn shadow-[inset_0_0_0_4px_white]' : 'border-gray-400'}`} />
               {opt}
             </button>
           );
         })}
       </div>
 
-      {answered && (
+      {!confirmed && (
+        <div className="mt-6 flex flex-wrap items-center gap-4">
+          <Button onClick={confirm} disabled={selected === null}>
+            {reveal ? 'Conferma risposta' : isLast ? 'Conferma e finisci' : 'Conferma e vai avanti →'}
+          </Button>
+          <span className="text-gray-600">{selected === null ? 'Scegli una risposta.' : 'Puoi ancora cambiare idea prima di confermare.'}</span>
+        </div>
+      )}
+
+      {confirmed && (
         <div className="mt-6 space-y-3" aria-live="polite">
-          {reveal ? (
-            <>
-              <p className={`text-xl font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                {isCorrect ? 'Giusto!' : selected === dontKnow ? 'Nessun problema, ecco la risposta.' : 'Non proprio.'}
-              </p>
-              <p className="text-lg">{q.explanation}</p>
-              {q.source && <SourceQuote source={q.source} />}
-            </>
-          ) : (
-            <p className="text-lg text-gray-700">Risposta registrata.</p>
-          )}
-          <Button onClick={next}>{details.length + 1 >= count ? 'Finito' : 'Prossima domanda →'}</Button>
+          <p className={`text-xl font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+            {isCorrect ? 'Giusto!' : selected === dontKnow ? 'Nessun problema, ecco la risposta.' : 'Non proprio.'}
+          </p>
+          <p className="text-lg">{q.explanation}</p>
+          {q.source && <SourceQuote source={q.source} />}
+          <Button onClick={next}>{isLast ? 'Finito' : 'Prossima domanda →'}</Button>
         </div>
       )}
     </Card>

@@ -34,4 +34,6 @@ cp .env.example .env   # inserire ANTHROPIC_API_KEY (opzionale: senza chiave par
 npm run dev            # client http://localhost:5173 · API http://localhost:3001
 npm test               # test del calcolatore, del verificatore e del quiz
 ```
+Per la lettura ad alta voce più naturale usare **Microsoft Edge**: l'app sceglie in automatico una voce femminile italiana "Natural" (Isabella o Elsa). In Chrome usa "Google italiano"; la voce si può cambiare dal menu "Voce" in alto.
+
 Senza API key l'app usa la polizza già estratta (`app/data/sample-policy.extracted.json`) e un quiz statico: la demo funziona anche offline.

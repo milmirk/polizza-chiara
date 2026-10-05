@@ -23,22 +23,22 @@ const SKILLS = [
   'Sai dove trovare la regola nella polizza (articolo e pagina).',
 ];
 
-export function ResultStep({ pre, post, onRestart }: { pre: QuizResult; post: QuizResult; onRestart: () => void }) {
-  const delta = post.correct / Math.max(post.total, 1) - pre.correct / Math.max(pre.total, 1);
+export function ResultStep({ pre, post, onRestart }: { pre: QuizResult | null; post: QuizResult; onRestart: () => void }) {
+  const delta = pre ? post.correct / Math.max(post.total, 1) - pre.correct / Math.max(pre.total, 1) : 0;
   const levels = ['', 'base', 'intermedio', 'avanzato'];
   return (
     <div className="space-y-6">
       <Card className="space-y-5">
         <h2 className="text-3xl font-bold">Cosa hai imparato</h2>
-        <Bar label="Prima" r={pre} tone="bg-gray-500" />
-        <Bar label="Dopo" r={post} tone="bg-acn" />
+        {pre && <Bar label="Prima" r={pre} tone="bg-gray-500" />}
+        <Bar label={pre ? 'Dopo' : 'Risultato'} r={post} tone="bg-acn" />
         <p className="text-xl">
-          {delta > 0
-            ? `Le risposte giuste sono passate da ${pre.correct} a ${post.correct}. `
-            : delta === 0 ? 'Il punteggio è uguale a prima. ' : ''}
+          {pre && delta > 0 ? `Le risposte giuste sono passate da ${pre.correct} a ${post.correct}. ` : ''}
+          {pre && delta === 0 ? 'Il punteggio è uguale a prima. ' : ''}
           Hai raggiunto le domande di livello <strong>{levels[post.maxDifficulty]}</strong>
-          {pre.maxDifficulty !== post.maxDifficulty ? ` (prima: ${levels[pre.maxDifficulty]})` : ''}.
+          {pre && pre.maxDifficulty !== post.maxDifficulty ? ` (prima: ${levels[pre.maxDifficulty]})` : ''}.
         </p>
+        {!pre && <p className="text-gray-600">Non hai fatto il quiz iniziale, quindi non c'è un confronto con il “prima”.</p>}
       </Card>
 
       <Card>

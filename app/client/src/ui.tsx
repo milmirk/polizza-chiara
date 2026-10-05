@@ -1,5 +1,6 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import type { SourceRef } from '../../shared/types';
+import { speak, stop, useSpeaking, useVoices } from './voice';
 
 export const eur = (n: number) =>
   n.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: n % 1 ? 2 : 0, useGrouping: 'always' } as Intl.NumberFormatOptions);
@@ -46,18 +47,39 @@ export function SourceQuote({ source }: { source: SourceRef }) {
 }
 
 export function Speak({ text }: { text: string }) {
+  const id = useId();
+  const speaking = useSpeaking(id);
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
-  const speak = () => {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'it-IT';
-    u.rate = 0.9;
-    window.speechSynthesis.speak(u);
-  };
   return (
-    <button onClick={speak} className="rounded-lg border-2 border-acn-dark px-3 py-1 text-base font-semibold text-acn-dark hover:bg-acn/10" aria-label="Ascolta il testo">
-      ▶ Ascolta
+    <button
+      onClick={() => (speaking ? stop() : speak(id, text))}
+      aria-pressed={speaking}
+      className={`rounded-lg border-2 px-3 py-1 text-base font-semibold ${speaking ? 'border-acn bg-acn text-white' : 'border-acn-dark text-acn-dark hover:bg-acn/10'}`}
+    >
+      {speaking ? '■ Ferma' : '▶ Ascolta'}
     </button>
+  );
+}
+
+export function VoicePicker() {
+  const { supported, voices, current, choose } = useVoices();
+  if (!supported || voices.length === 0) return null;
+  const label = (v: SpeechSynthesisVoice) =>
+    v.name.replace(/^Microsoft\s+/, '').replace(/\s*-\s*Italian.*$/, '').replace(/Online \(Natural\)/, '(naturale)');
+  return (
+    <label className="flex items-center gap-2 text-gray-600">
+      Voce
+      <select
+        value={current?.name}
+        onChange={(e) => {
+          choose(e.target.value);
+          speak('voice-test', 'Ciao, sono la voce che ti legge la polizza.');
+        }}
+        className="h-12 rounded-lg border-2 border-gray-300 px-2 text-base text-ink"
+      >
+        {voices.map((v) => <option key={v.name} value={v.name}>{label(v)}</option>)}
+      </select>
+    </label>
   );
 }
 
