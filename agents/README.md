@@ -9,7 +9,7 @@ Due livelli di agenti:
 | Agente | Prompt | Endpoint | Output | Controllo |
 |---|---|---|---|---|
 | Estrattore | [prompts/extractor.md](prompts/extractor.md) | `POST /api/extract` | `Policy` JSON (structured output, schema Zod) | Verificatore: citazioni alla lettera + numeri |
-| Spiegatore | [prompts/explainer.md](prompts/explainer.md) | `POST /api/explain` | Testo a livello `semplice` / `medio`, oppure esempio | Ciclo genera → verifica → correggi (massimo 2 tentativi), poi fallback deterministico |
+| Semplificatore | [prompts/explainer.md](prompts/explainer.md) | `POST /api/explain` | Testo a livello `semplice` / `medio`, oppure esempio | Ciclo genera → verifica → correggi (massimo 2 tentativi), poi fallback deterministico |
 | Quiz Coach | [prompts/quiz-coach.md](prompts/quiz-coach.md) | `POST /api/quiz` | Domande concettuali con difficoltà 1-3 | Validazione delle opzioni; le domande di calcolo le genera il motore |
 | Guardiano | [prompts/guardian.md](prompts/guardian.md) | `POST /api/ask` | Risposta con citazioni oppure `outOfScope` | Filtro regex in ingresso e in uscita (`app/server/src/guardrail.ts`) |
 

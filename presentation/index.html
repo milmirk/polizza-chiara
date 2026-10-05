@@ -311,7 +311,7 @@
       <div class="node ai" style="left:0; top:30px"><span class="k">Agente AI</span><b>Estrattore</b><span>Polizza → dati strutturati (schema Zod), ogni voce con citazione e pagina.</span></div>
       <div class="node code" style="left:560px; top:30px"><span class="k">Codice</span><b>Verificatore</b><span>Citazioni presenti alla lettera, nessun numero inventato.</span></div>
       <div class="node code" style="left:560px; top:400px"><span class="k">Codice</span><b>Calcolatore</b><span>Carenza, franchigia, scoperto, minimo, sottolimite. Testato.</span></div>
-      <div class="node ai" style="left:1220px; top:0"><span class="k">Agente AI</span><b>Spiegatore</b><span>Semplice, medio, esempio. Si autocorregge.</span></div>
+      <div class="node ai" style="left:1220px; top:0"><span class="k">Agente AI</span><b>Semplificatore</b><span>Semplice, medio, esempio. Si autocorregge.</span></div>
       <div class="node ai" style="left:1220px; top:230px"><span class="k">Agente AI</span><b>Quiz Coach</b><span>Domande adattive su 3 livelli.</span></div>
       <div class="node ai" style="left:1220px; top:460px"><span class="k">Agente AI</span><b>Guardiano</b><span>Risponde solo dalla polizza, blocca consulenza.</span></div>
     </div>
@@ -323,9 +323,9 @@
     <span class="eyebrow r">Il ciclo agentico</span>
     <h2 class="r" style="--d:1">Se l'AI inventa un numero,<br><span class="grad">a Rosa non arriva.</span></h2>
     <div class="loop">
-      <div class="step r" style="--d:3"><span class="n">1 · Spiegatore</span><h3>Scrive</h3><div class="mono">“…in un centro convenzionato paghi solo <span class="x">35</span> euro.”</div></div>
+      <div class="step r" style="--d:3"><span class="n">1 · Semplificatore</span><h3>Scrive</h3><div class="mono">“…in un centro convenzionato paghi solo <span class="x">35</span> euro.”</div></div>
       <div class="step bad frag"><span class="n">2 · Verificatore</span><h3><span class="x">✗</span> Scarta</h3><div class="mono">Il numero 35 non compare nelle condizioni della garanzia.</div></div>
-      <div class="step frag"><span class="n">3 · Spiegatore</span><h3>Riscrive</h3><p>Riceve il motivo dello scarto e rigenera. Massimo 2 tentativi.</p></div>
+      <div class="step frag"><span class="n">3 · Semplificatore</span><h3>Riscrive</h3><p>Riceve il motivo dello scarto e rigenera. Massimo 2 tentativi.</p></div>
       <div class="step good frag"><span class="n">4 · Rosa</span><h3><span class="v">✓</span> Legge</h3><p>Solo testi verificati. Se il ciclo fallisce: testo deterministico già controllato.</p></div>
     </div>
     <p class="lead r" style="--d:5; margin-top:60px">Lo stesso verificatore ha trovato errori anche nei <b style="color:#fff">nostri</b> dati di esempio: due citazioni che univano righe diverse del documento. Le abbiamo corrette.</p>
@@ -418,7 +418,7 @@
             <tr><td>Piano</td><td>Claude Code in plan mode</td><td>Tema, persona e vincoli scelti dal team</td></tr>
             <tr><td>Estrazione</td><td>Agente Estrattore</td><td>JSON di riferimento controllato riga per riga</td></tr>
             <tr><td>Calcolo</td><td>Codice generato</td><td>Casi di test calcolati a mano</td></tr>
-            <tr><td>Testi semplici</td><td>Agente Spiegatore</td><td>Letti pensando a Rosa, numeri vincolati dal codice</td></tr>
+            <tr><td>Testi semplici</td><td>Agente Semplificatore</td><td>Letti pensando a Rosa, numeri vincolati dal codice</td></tr>
             <tr><td>Guardrail</td><td>Prompt e filtri proposti</td><td>Casi vietati decisi sulle regole del tema</td></tr>
             <tr><td>UI</td><td>Componenti generati</td><td>Provata in browser; navigazione, voce e quiz rivisti dal team</td></tr>
           </tbody>

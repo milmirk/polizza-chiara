@@ -18,7 +18,7 @@ README.md
 ## Come funziona
 1. **Agente Estrattore** (Claude, structured output): legge la polizza e produce dati strutturati con **citazione testuale e pagina** per ogni voce.
 2. **Verificatore deterministico** (`app/shared/verify.ts`): controlla che ogni citazione sia nel documento alla lettera e che le spiegazioni non contengano numeri inventati.
-3. **Agente Spiegatore**: spiega una garanzia a due livelli o con un esempio; se il verificatore scarta la risposta, il ciclo la fa rigenerare.
+3. **Agente Semplificatore**: spiega una garanzia a due livelli o con un esempio; se il verificatore scarta la risposta, il ciclo la fa rigenerare.
 4. **Simulatore "Quanto pago io?"** (`app/shared/calculator.ts`): un calcolo deterministico, non fatto dall'LLM, applica carenza, franchigia, scoperto e sottolimite passo per passo.
 5. **Quiz Coach adattivo**: domande di calcolo generate dal motore e domande concettuali generate dall'agente; la difficoltà si adatta alle risposte e misura la comprensione prima e dopo.
 6. **Guardiano**: blocca le richieste di consulenza finanziaria o medica, sia in ingresso sia in uscita.

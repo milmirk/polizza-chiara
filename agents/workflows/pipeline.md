@@ -17,7 +17,7 @@
             ┌────────────────────────────┼─────────────────────────────┐
             ▼                            ▼                             ▼
  ┌──────────────────┐        ┌─────────────────────┐        ┌───────────────────┐
- │ Agente Spiegatore│        │ Simulatore          │        │ Quiz Coach        │
+ │ Semplificatore   │        │ Simulatore          │        │ Quiz Coach        │
  │ semplice / medio │        │ "Quanto pago io?"   │        │ adattivo 1→3      │
  │ riformula/esempio│◄───────│ (calculator.ts)     │───────►│ + domande calcolo │
  └──────────────────┘ numeri └─────────────────────┘ numeri └───────────────────┘
@@ -29,6 +29,6 @@
 ## Modalità fallback
 Senza API key, o se il modello non risponde, ogni agente ha un'alternativa deterministica:
 - Estrattore → `app/data/sample-policy.extracted.json` (estrazione revisionata a mano)
-- Spiegatore → testi `plain` già verificati, oppure un esempio costruito dal calcolatore
+- Semplificatore → testi `plain` già verificati, oppure un esempio costruito dal calcolatore
 - Quiz Coach → `app/data/sample-quiz.json` + domande di calcolo
 - Guardiano → solo i filtri regex
