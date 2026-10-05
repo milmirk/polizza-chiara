@@ -1,0 +1,56 @@
+[
+  {
+    "id": "c-franchigia",
+    "question": "Cos'è la franchigia?",
+    "options": ["Una cifra fissa che paghi sempre tu", "Lo sconto che ti fa la clinica", "Il massimo che la compagnia paga in un anno"],
+    "correctIndex": 0,
+    "explanation": "La franchigia è un importo fisso che resta a tuo carico ogni volta (Art. 1).",
+    "difficulty": 1,
+    "source": { "article": "Art. 1", "page": 1, "quote": "importo prestabilito, espresso in cifra fissa, che rimane a carico dell'Assicurato per ciascun sinistro." }
+  },
+  {
+    "id": "c-diretta",
+    "question": "Cosa vuol dire 'forma diretta'?",
+    "options": ["Paghi tutto tu e poi ti rimborsano", "Vai in una struttura convenzionata e paga direttamente la compagnia", "Ti curi solo in ospedale pubblico"],
+    "correctIndex": 1,
+    "explanation": "Nella forma diretta la compagnia paga la struttura convenzionata; tu paghi solo franchigia o scoperto (Art. 1).",
+    "difficulty": 1,
+    "source": { "article": "Art. 1", "page": 1, "quote": "la Società paga direttamente le strutture sanitarie e i medici convenzionati con il Network, salvo franchigie e scoperti a carico dell'Assicurato." }
+  },
+  {
+    "id": "c-carenza",
+    "question": "La polizza è iniziata il 1° settembre. Il 15 settembre fai una risonanza per una malattia. È coperta?",
+    "options": ["Sì, sempre", "No, per le malattie la copertura parte dal 30° giorno", "Solo se la struttura è convenzionata"],
+    "correctIndex": 1,
+    "explanation": "Per le malattie c'è una carenza di 30 giorni dalla decorrenza (Art. 3 lett. b).",
+    "difficulty": 2,
+    "source": { "article": "Art. 3", "page": 2, "quote": "per le malattie, dal 30° giorno successivo a quello di decorrenza della polizza;" }
+  },
+  {
+    "id": "c-scoperto-minimo",
+    "question": "Lo scoperto è del 25% con minimo 80 €. Su una fattura di 200 €, quanto paghi tu?",
+    "options": ["50 €", "80 €", "200 €"],
+    "correctIndex": 1,
+    "explanation": "Il 25% di 200 € è 50 €, ma è sotto il minimo: paghi 80 € (Art. 6).",
+    "difficulty": 2,
+    "source": { "article": "Art. 6", "page": 3, "quote": "Forma indiretta: applicazione di uno scoperto del 25% con il minimo non indennizzabile di € 80,00 per ciascun accertamento." }
+  },
+  {
+    "id": "c-preesistenza",
+    "question": "Avevi già mal di schiena curato prima di fare la polizza. Le cure per quel problema sono coperte?",
+    "options": ["Sì", "No, sono malattie preesistenti escluse", "Solo in forma indiretta"],
+    "correctIndex": 1,
+    "explanation": "Le malattie già diagnosticate o curate prima della polizza sono escluse (Art. 4 e Art. 10 lett. a).",
+    "difficulty": 3,
+    "source": { "article": "Art. 4", "page": 2, "quote": "Sono escluse dall'assicurazione le prestazioni conseguenti a malattie preesistenti alla data di decorrenza della polizza, come definite all'Art. 1." }
+  },
+  {
+    "id": "c-fisioterapia",
+    "question": "Ti serve fisioterapia per l'artrosi, senza nessun infortunio. La polizza la copre?",
+    "options": ["Sì, fino a 800 €", "No, la fisioterapia è coperta solo dopo un infortunio con referto di Pronto Soccorso", "Sì, ma solo fuori rete"],
+    "correctIndex": 1,
+    "explanation": "L'Art. 8 copre la fisioterapia esclusivamente a seguito di infortunio documentato dal Pronto Soccorso.",
+    "difficulty": 3,
+    "source": { "article": "Art. 8", "page": 4, "quote": "esclusivamente a seguito di infortunio documentato da referto di Pronto Soccorso, entro 90 giorni dall'infortunio." }
+  }
+]

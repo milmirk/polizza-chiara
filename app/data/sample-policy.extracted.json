@@ -1,0 +1,371 @@
+{
+  "title": "Salute Serena – Rimborso Spese Mediche",
+  "insurer": "Compagnia Assicuratrice Demo S.p.A.",
+  "startDate": "2026-09-01",
+  "overallAnnualLimit": 100000,
+  "preexistingExcluded": true,
+  "coverages": [
+    {
+      "id": "ricovero",
+      "name": "Ricovero, Day Hospital e Day Surgery",
+      "examples": [
+        "intervento chirurgico",
+        "day hospital",
+        "day surgery",
+        "degenza in clinica"
+      ],
+      "covered": true,
+      "annualLimit": 100000,
+      "waitingDays": 30,
+      "diretta": {
+        "deductible": 0,
+        "copayPercent": 0,
+        "copayMin": 0
+      },
+      "indiretta": {
+        "deductible": 0,
+        "copayPercent": 20,
+        "copayMin": 1000
+      },
+      "source": [
+        {
+          "article": "Art. 5",
+          "page": 3,
+          "quote": "Forma diretta (strutture e medici convenzionati): le spese sono liquidate direttamente dalla Società senza applicazione di franchigie o scoperti."
+        },
+        {
+          "article": "Art. 5",
+          "page": 3,
+          "quote": "Forma indiretta: le spese sono rimborsate con applicazione di uno scoperto del 20% con il minimo non indennizzabile di € 1.000,00 per ricovero."
+        }
+      ],
+      "plain": {
+        "semplice": "Se vai in ospedale o fai un piccolo intervento in giornata: in una clinica convenzionata non paghi niente, paga tutto la compagnia. In una clinica non convenzionata paghi tu e poi ti rimborsano, ma una parte resta a te: il 20% della spesa, e comunque almeno 1.000 euro.",
+        "medio": "Ricoveri, day hospital e day surgery sono coperti fino a 100.000 € all'anno. In forma diretta (Network convenzionato) non ci sono franchigie né scoperti. In forma indiretta si applica uno scoperto del 20% con minimo di 1.000 € per ricovero. Vale dal 30° giorno dalla decorrenza per le malattie."
+      }
+    },
+    {
+      "id": "alta_diagnostica",
+      "name": "Alta specializzazione diagnostica",
+      "examples": [
+        "risonanza magnetica",
+        "TAC",
+        "PET",
+        "ecocolordoppler",
+        "mammografia",
+        "MOC",
+        "endoscopia"
+      ],
+      "covered": true,
+      "annualLimit": 5000,
+      "waitingDays": 30,
+      "diretta": {
+        "deductible": 40,
+        "copayPercent": 0,
+        "copayMin": 0
+      },
+      "indiretta": {
+        "deductible": 0,
+        "copayPercent": 25,
+        "copayMin": 80
+      },
+      "source": [
+        {
+          "article": "Art. 6",
+          "page": 3,
+          "quote": "Forma diretta: applicazione di una franchigia fissa di € 40,00 per ciascun accertamento."
+        },
+        {
+          "article": "Art. 6",
+          "page": 3,
+          "quote": "Forma indiretta: applicazione di uno scoperto del 25% con il minimo non indennizzabile di € 80,00 per ciascun accertamento."
+        },
+        {
+          "article": "Art. 6",
+          "page": 3,
+          "quote": "La garanzia è prestata entro il sottolimite annuo di € 5.000,00 per Assicurato."
+        }
+      ],
+      "plain": {
+        "semplice": "Esami importanti come risonanza magnetica e TAC. In un centro convenzionato paghi tu solo 40 euro, il resto lo paga la compagnia. In un centro non convenzionato paghi tutto tu e poi ti rimborsano, ma ti resta da pagare un quarto della spesa (25%), e comunque almeno 80 euro. In un anno la compagnia paga al massimo 5.000 euro per questi esami.",
+        "medio": "Esami di alta diagnostica (RMN, TAC, PET, ecocolordoppler, ecc.) con sottolimite di 5.000 €/anno. Forma diretta: franchigia fissa 40 € per accertamento. Forma indiretta: scoperto 25% con minimo 80 € per accertamento. Carenza 30 giorni per malattia."
+      }
+    },
+    {
+      "id": "visite_specialistiche",
+      "name": "Visite specialistiche e accertamenti diagnostici",
+      "examples": [
+        "visita cardiologica",
+        "visita ortopedica",
+        "esami del sangue",
+        "radiografia",
+        "ecografia"
+      ],
+      "covered": true,
+      "annualLimit": 1500,
+      "waitingDays": 30,
+      "diretta": {
+        "deductible": 25,
+        "copayPercent": 0,
+        "copayMin": 0
+      },
+      "indiretta": {
+        "deductible": 0,
+        "copayPercent": 20,
+        "copayMin": 50
+      },
+      "source": [
+        {
+          "article": "Art. 7",
+          "page": 4,
+          "quote": "Forma diretta: applicazione di una franchigia fissa di € 25,00 per ciascuna prestazione."
+        },
+        {
+          "article": "Art. 7",
+          "page": 4,
+          "quote": "Forma indiretta: applicazione di uno scoperto del 20% con il minimo non indennizzabile di € 50,00 per ciascuna prestazione."
+        },
+        {
+          "article": "Art. 7",
+          "page": 4,
+          "quote": "purché prescritti da un medico con indicazione della patologia, presunta o accertata."
+        }
+      ],
+      "plain": {
+        "semplice": "Visite dal medico specialista ed esami normali (sangue, radiografie, ecografie). Serve la ricetta del medico. Dove è convenzionato paghi 25 euro a visita. Altrove paghi tu e ti rimborsano, ma ti restano il 20% della spesa, e almeno 50 euro. Massimo 1.500 euro all'anno.",
+        "medio": "Visite specialistiche e accertamenti non di alta diagnostica, con prescrizione medica che indichi la patologia. Sottolimite 1.500 €/anno. Diretta: franchigia 25 € per prestazione. Indiretta: scoperto 20%, minimo 50 €. Escluse visite pediatriche di controllo e odontoiatriche."
+      }
+    },
+    {
+      "id": "fisioterapia",
+      "name": "Fisioterapia dopo infortunio",
+      "examples": [
+        "fisioterapia",
+        "riabilitazione dopo una caduta"
+      ],
+      "covered": true,
+      "annualLimit": 800,
+      "waitingDays": 0,
+      "diretta": {
+        "deductible": 30,
+        "copayPercent": 0,
+        "copayMin": 0
+      },
+      "indiretta": null,
+      "source": [
+        {
+          "article": "Art. 8",
+          "page": 4,
+          "quote": "esclusivamente a seguito di infortunio documentato da referto di Pronto Soccorso, entro 90 giorni dall'infortunio."
+        },
+        {
+          "article": "Art. 8",
+          "page": 4,
+          "quote": "Forma diretta: applicazione di una franchigia fissa di € 30,00 per ciclo di trattamento."
+        },
+        {
+          "article": "Art. 8",
+          "page": 4,
+          "quote": "Forma indiretta: non prevista."
+        }
+      ],
+      "plain": {
+        "semplice": "La fisioterapia è coperta solo se ti sei fatta male in un incidente e hai il foglio del Pronto Soccorso. Va fatta entro 3 mesi. Solo nei centri convenzionati: paghi 30 euro per ciclo. Fuori dai centri convenzionati non c'è rimborso.",
+        "medio": "Fisioterapia solo post-infortunio con referto di Pronto Soccorso, entro 90 giorni. Solo forma diretta, franchigia 30 € per ciclo; forma indiretta non prevista. Sottolimite 800 €/anno."
+      }
+    },
+    {
+      "id": "parto",
+      "name": "Parto e gravidanza",
+      "examples": [
+        "parto",
+        "visite in gravidanza"
+      ],
+      "covered": true,
+      "annualLimit": 3000,
+      "waitingDays": 300,
+      "diretta": {
+        "deductible": 0,
+        "copayPercent": 0,
+        "copayMin": 0
+      },
+      "indiretta": {
+        "deductible": 0,
+        "copayPercent": 10,
+        "copayMin": 0
+      },
+      "source": [
+        {
+          "article": "Art. 3",
+          "page": 2,
+          "quote": "per il parto e le malattie dipendenti da gravidanza, dal 300° giorno successivo a quello di decorrenza della polizza."
+        },
+        {
+          "article": "Art. 9",
+          "page": 5,
+          "quote": "La garanzia è prestata entro il sottolimite annuo di € 3.000,00 per Assicurato."
+        }
+      ],
+      "plain": {
+        "semplice": "Parto e visite in gravidanza sono coperti, ma solo dopo 300 giorni (circa 10 mesi) dall'inizio della polizza. Massimo 3.000 euro all'anno.",
+        "medio": "Parto e controlli in gravidanza: carenza di 300 giorni, sottolimite 3.000 €/anno. Diretta senza franchigia; indiretta con scoperto 10% senza minimo."
+      }
+    },
+    {
+      "id": "odontoiatria",
+      "name": "Cure dentarie",
+      "examples": [
+        "dentista",
+        "otturazione",
+        "protesi dentaria",
+        "apparecchio"
+      ],
+      "covered": false,
+      "annualLimit": null,
+      "waitingDays": 0,
+      "diretta": null,
+      "indiretta": null,
+      "source": [
+        {
+          "article": "Art. 10 lett. b)",
+          "page": 5,
+          "quote": "cure e protesi dentarie, salvo quelle rese necessarie da infortunio;"
+        }
+      ],
+      "plain": {
+        "semplice": "Il dentista non è coperto. Solo se ti sei rotta un dente in un incidente.",
+        "medio": "Cure e protesi dentarie escluse, salvo quelle necessarie a seguito di infortunio."
+      }
+    }
+  ],
+  "exclusions": [
+    {
+      "text": "malattie preesistenti come definite all'Art. 1",
+      "plain": "Malattie che avevi già prima di fare la polizza (anche solo sintomi che conoscevi).",
+      "source": {
+        "article": "Art. 10 lett. a)",
+        "page": 5,
+        "quote": "malattie preesistenti come definite all'Art. 1;"
+      }
+    },
+    {
+      "text": "cure e protesi dentarie, salvo quelle rese necessarie da infortunio",
+      "plain": "Dentista, tranne dopo un incidente.",
+      "source": {
+        "article": "Art. 10 lett. b)",
+        "page": 5,
+        "quote": "cure e protesi dentarie, salvo quelle rese necessarie da infortunio;"
+      }
+    },
+    {
+      "text": "prestazioni aventi finalità estetiche",
+      "plain": "Interventi solo per essere più belli, tranne la ricostruzione dopo un incidente.",
+      "source": {
+        "article": "Art. 10 lett. c)",
+        "page": 5,
+        "quote": "prestazioni aventi finalità estetiche, salvo gli interventi di chirurgia ricostruttiva conseguenti a infortunio;"
+      }
+    },
+    {
+      "text": "cure per infertilità e fecondazione assistita",
+      "plain": "Cure per avere figli.",
+      "source": {
+        "article": "Art. 10 lett. d)",
+        "page": 5,
+        "quote": "cure per infertilità e pratiche di fecondazione assistita;"
+      }
+    },
+    {
+      "text": "acquisto di occhiali e lenti a contatto",
+      "plain": "Occhiali e lenti a contatto.",
+      "source": {
+        "article": "Art. 10 lett. e)",
+        "page": 5,
+        "quote": "acquisto di occhiali e lenti a contatto;"
+      }
+    },
+    {
+      "text": "cure termali, salvo infortunio",
+      "plain": "Terme, tranne dopo un incidente.",
+      "source": {
+        "article": "Art. 10 lett. g)",
+        "page": 5,
+        "quote": "cure termali, salvo quelle rese necessarie da infortunio."
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "Franchigia",
+      "definition": "Una cifra fissa (per esempio 40 euro) che paghi sempre tu, ogni volta.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "importo prestabilito, espresso in cifra fissa, che rimane a carico dell'Assicurato per ciascun sinistro."
+      }
+    },
+    {
+      "term": "Scoperto",
+      "definition": "Una percentuale della spesa (per esempio il 20%) che paghi tu. Spesso c'è anche un minimo: se la percentuale è più bassa del minimo, paghi il minimo.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "percentuale delle spese indennizzabili che rimane a carico dell'Assicurato per ciascun sinistro, con l'eventuale minimo non indennizzabile indicato."
+      }
+    },
+    {
+      "term": "Carenza",
+      "definition": "I primi giorni dopo che hai fatto la polizza, in cui una garanzia non vale ancora.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "periodo di tempo che intercorre tra la decorrenza della polizza e il momento a partire dal quale la garanzia diventa operante."
+      }
+    },
+    {
+      "term": "Massimale",
+      "definition": "Il massimo che la compagnia può pagarti in un anno, in totale.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "somma massima che la Società si impegna a corrispondere per ciascun Assicurato e per anno assicurativo."
+      }
+    },
+    {
+      "term": "Sottolimite",
+      "definition": "Un massimo più piccolo, solo per un tipo di prestazione (per esempio 5.000 euro all'anno per le risonanze).",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "limite di indennizzo, inferiore al massimale, previsto per specifiche garanzie."
+      }
+    },
+    {
+      "term": "Forma diretta",
+      "definition": "Vai in una struttura convenzionata: paga direttamente la compagnia, tu paghi solo la tua parte.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "la Società paga direttamente le strutture sanitarie e i medici convenzionati con il Network, salvo franchigie e scoperti a carico dell'Assicurato."
+      }
+    },
+    {
+      "term": "Forma indiretta",
+      "definition": "Vai dove vuoi: paghi tu tutta la fattura, poi mandi i documenti e la compagnia ti restituisce una parte.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "l'Assicurato sostiene la spesa e la Società provvede successivamente al rimborso, previa presentazione della documentazione di spesa."
+      }
+    },
+    {
+      "term": "Malattia preesistente",
+      "definition": "Una malattia che avevi già, o di cui conoscevi i sintomi, prima di fare la polizza. Non è coperta.",
+      "source": {
+        "article": "Art. 1",
+        "page": 1,
+        "quote": "malattia diagnosticata, curata o che abbia dato origine a sintomi noti all'Assicurato prima della decorrenza della polizza."
+      }
+    }
+  ]
+}

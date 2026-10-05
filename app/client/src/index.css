@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-acn: #A100FF;
+  --color-acn-light: #BE82FF;
+  --color-acn-dark: #460073;
+  --color-ink: #0A0014;
+  --font-sans: "Graphik", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html { font-size: 19px; }
+body { @apply bg-white text-ink antialiased; }
+:focus-visible { outline: 3px solid var(--color-acn); outline-offset: 2px; }
