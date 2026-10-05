@@ -4,7 +4,7 @@ import { Badge, Button, Card, Spinner } from '../ui';
 
 const STAGES = ['Leggo il documento…', 'Trovo le garanzie e le regole…', 'Scrivo le spiegazioni semplici…', 'Controllo citazioni e numeri…'];
 
-export function PolicyStep({ data, onLoaded, onNext }: { data: ExtractResponse | null; onLoaded: (d: ExtractResponse) => void; onNext: () => void }) {
+export function PolicyStep({ data, aiAvailable, onLoaded, onNext }: { data: ExtractResponse | null; aiAvailable: boolean; onLoaded: (d: ExtractResponse) => void; onNext: () => void }) {
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState(0);
 
@@ -105,11 +105,18 @@ export function PolicyStep({ data, onLoaded, onNext }: { data: ExtractResponse |
                 </Badge>
                 {data.fallback ? (
                   <Badge tone="info">Dati pre-estratti (modalità demo)</Badge>
+                ) : data.cached ? (
+                  <Badge tone="info">Estrazione già verificata · 0 token</Badge>
                 ) : (
                   <Badge tone="info">Estratta dall'AI in {Math.round((data.ms ?? 0) / 1000)} s</Badge>
                 )}
               </div>
               {data.error && <p className="mt-2 text-sm text-gray-500">L'AI non era disponibile: uso i dati già pronti.</p>}
+              {data.cached && aiAvailable && (
+                <Button variant="ghost" className="mt-2 px-0" onClick={() => run(() => api.extractSample(true))}>
+                  Rifai l'estrazione con l'AI
+                </Button>
+              )}
             </Card>
           </div>
           <div className="flex justify-end">

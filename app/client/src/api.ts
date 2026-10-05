@@ -1,4 +1,4 @@
-import type { Level, Policy, QuizQuestion, SimulationInput, SimulationResult, SourceRef } from '../../shared/types';
+import type { Level, Policy, QuizQuestion, SourceRef } from '../../shared/types';
 import type { CoverageCheck } from '../../shared/verify';
 
 export interface ExtractResponse {
@@ -6,8 +6,15 @@ export interface ExtractResponse {
   checks: CoverageCheck[];
   sourceText?: string;
   fallback: boolean;
+  cached: boolean;
   error?: string;
   ms?: number;
+}
+
+export interface Usage {
+  requests: number;
+  tokens: number;
+  total: { llmCalls: number; cacheHits: number; noLlm: number; inputTokens: number; outputTokens: number };
 }
 
 async function post<T>(url: string, body: unknown): Promise<T> {
@@ -18,18 +25,17 @@ async function post<T>(url: string, body: unknown): Promise<T> {
 
 export const api = {
   health: () => fetch('/api/health').then((r) => r.json() as Promise<{ model: string; hasApiKey: boolean }>),
-  sample: () => fetch('/api/sample').then((r) => r.json() as Promise<ExtractResponse>),
-  extractSample: () => post<ExtractResponse>('/api/extract', {}),
+  usage: () => fetch('/api/usage').then((r) => r.json() as Promise<Usage>),
+  extractSample: (force = false) => post<ExtractResponse>('/api/extract', { force }),
   extractFile: async (file: File) => {
     const fd = new FormData();
     fd.append('file', file);
     const r = await fetch('/api/extract', { method: 'POST', body: fd });
     return r.json() as Promise<ExtractResponse>;
   },
-  simulate: (policy: Policy, input: SimulationInput) => post<SimulationResult>('/api/simulate', { policy, input }),
   explain: (policy: Policy, coverageId: string, level: Exclude<Level, 'originale'>, mode: 'riformula' | 'esempio', cost?: number) =>
-    post<{ text: string; attempts: number; fallback: boolean; issues: string[] }>('/api/explain', { policy, coverageId, level, mode, cost }),
-  quiz: (policy: Policy) => post<{ questions: QuizQuestion[]; fallback: boolean }>('/api/quiz', { policy }),
+    post<{ text: string; attempts: number; fallback: boolean; cached: boolean; issues: string[] }>('/api/explain', { policy, coverageId, level, mode, cost }),
+  quiz: (policy: Policy) => post<{ questions: QuizQuestion[]; fallback: boolean; cached: boolean }>('/api/quiz', { policy }),
   ask: (policy: Policy, question: string, sourceText?: string) =>
-    post<{ outOfScope: boolean; answer: string; sources: SourceRef[]; guard?: string }>('/api/ask', { policy, question, sourceText }),
+    post<{ outOfScope: boolean; answer: string; sources: SourceRef[]; guard?: string; cached?: boolean; fallback?: boolean }>('/api/ask', { policy, question, sourceText }),
 };

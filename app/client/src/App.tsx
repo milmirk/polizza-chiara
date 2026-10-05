@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { QuizQuestion } from '../../shared/types';
-import { api, type ExtractResponse } from './api';
+import { api, type ExtractResponse, type Usage } from './api';
 import { AskStep } from './steps/AskStep';
 import { CoverageStep } from './steps/CoverageStep';
 import { PolicyStep } from './steps/PolicyStep';
@@ -25,9 +25,14 @@ export default function App() {
   const [post, setPost] = useState<QuizResult | null>(null);
   const [font, setFont] = useState(0);
   const [health, setHealth] = useState<{ model: string; hasApiKey: boolean } | null>(null);
+  const [usage, setUsage] = useState<Usage | null>(null);
 
   useEffect(() => {
     api.health().then(setHealth).catch(() => setHealth(null));
+    const refresh = () => api.usage().then(setUsage).catch(() => undefined);
+    refresh();
+    const t = setInterval(refresh, 4000);
+    return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
@@ -112,7 +117,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
-        {step === 0 && <PolicyStep data={data} onLoaded={loaded} onNext={next} />}
+        {step === 0 && <PolicyStep data={data} aiAvailable={!!health?.hasApiKey} onLoaded={loaded} onNext={next} />}
         {step === 1 && data && (
           pre ? (
             <div className="space-y-4">
@@ -158,6 +163,11 @@ export default function App() {
           </p>
           <p className="text-sm text-gray-500">
             {health ? (health.hasApiKey ? `AI: ${health.model}` : 'Modalità demo (senza AI)') : 'Server non raggiungibile'}
+            {usage && usage.requests > 0 && (
+              <span title="Richieste servite dalla cache o senza AI non consumano token">
+                {' · '}Token AI: {usage.tokens.toLocaleString('it-IT')} · {usage.total.cacheHits + usage.total.noLlm} risposte su {usage.requests} a 0 token
+              </span>
+            )}
           </p>
         </div>
       </footer>

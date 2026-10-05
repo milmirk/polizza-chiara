@@ -54,7 +54,9 @@ function Detail({ policy, cov, check }: { policy: Policy; cov: Coverage; check?:
       const r = await api.explain(policy, cov.id, lvl, mode, cost);
       const meta = r.fallback
         ? 'Testo preparato dal motore di calcolo (AI non disponibile)'
-        : `Scritto dall'AI e controllato dal verificatore${r.attempts > 1 ? ` (corretto al ${r.attempts}° tentativo)` : ''}`;
+        : r.cached
+          ? 'Già scritto dall’AI e verificato: ripreso dalla cache, 0 token'
+          : `Scritto dall'AI e controllato dal verificatore${r.attempts > 1 ? ` (corretto al ${r.attempts}° tentativo)` : ''}`;
       setAlt({ text: r.text, meta, issues: r.issues });
     } finally {
       setLoading(null);
