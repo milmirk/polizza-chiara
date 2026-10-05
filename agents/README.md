@@ -20,6 +20,18 @@ Componenti deterministici (niente LLM, coperti da unit test):
 
 Il flusso completo è in [workflows/pipeline.md](workflows/pipeline.md).
 
+## Strategia sui token
+Ogni chiamata passa da `app/server/src/claude.ts`. La cache usa come chiave agente + modello + effort + prompt + contesto: cambiando un prompt la cache si invalida da sola. Ogni chiamata registra i token in `usage.ts` (`GET /api/usage`).
+
+| Agente | Contesto inviato (`context.ts`) | `max_tokens` | Quando non chiama l'LLM |
+|---|---|---|---|
+| Estrattore | testo del documento (PDF → testo) | 12000 | documento già estratto: cache o estrazione verificata a mano |
+| Semplificatore | solo la garanzia: condizioni, citazioni e numeri del motore | 1200 | senza AI: testo `plain` verificato o esempio dal calcolatore |
+| Quiz Coach | polizza compatta, senza testi semplici né esempi | 4000 | quiz già generato per la stessa polizza; domande di calcolo sempre in codice |
+| Guardiano | 6 passaggi pertinenti (ricerca con pesi IDF) | 1500 | domande di consulenza o mediche bloccate prima; senza AI: ricerca nel testo |
+
+Effort `low` di default (`CLAUDE_EFFORT`). I budget di input sono verificati da `app/server/src/budget.test.ts` (`npm run tokens`).
+
 ## Principio di progetto: l'AI semplifica, il codice garantisce
 - L'LLM **non fa mai i conti**: gli importi li calcola `calculator.ts`, che l'LLM al massimo racconta.
 - Ogni frase semplificata sta accanto alla **citazione originale** con articolo e pagina.

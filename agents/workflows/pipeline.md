@@ -26,6 +26,12 @@
    Utente (Rosa) ◄──── Guardiano: blocca consulenza finanziaria / medica
 ```
 
+## Prima del modello: cache e codice
+Ogni richiesta a un agente passa da tre filtri, in quest'ordine; l'LLM si chiama solo se nessuno risponde:
+1. **Guardrail in ingresso** (`guardrail.ts`): consulenza o domanda medica → risposta fissa, 0 token.
+2. **Cache** (`cache.ts`): stessa richiesta già servita, o estrazione verificata a mano → 0 token.
+3. **Contesto minimo** (`context.ts`): al modello arriva solo ciò che serve a quella risposta.
+
 ## Modalità fallback
 Senza API key, o se il modello non risponde, ogni agente ha un'alternativa deterministica:
 - Estrattore → `app/data/sample-policy.extracted.json` (estrazione revisionata a mano)

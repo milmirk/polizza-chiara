@@ -144,6 +144,12 @@
   .lv { border-radius: 999px; padding: 12px 26px; border: 1px solid var(--line); color: var(--t2); }
   .lv.on { border-color: var(--p); background: rgba(161,0,255,.2); color: #fff; font-weight: 700; }
 
+  .tok { display: grid; gap: 22px; }
+  .tok .name { font-size: 30px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; }
+  .tok .name em { font-style: normal; color: var(--pl); font-size: 34px; font-weight: 800; }
+  .tok .track { height: 26px; margin-top: 10px; }
+  .tok .track + .track { margin-top: 8px; }
+  .tok .legend { font-size: 20px; color: var(--t3); display: flex; gap: 28px; margin-top: 8px; }
   .cols3 h3 { font-size: 36px; }
   .cols3 ul { list-style: none; padding: 0; margin: 22px 0 0; }
   .cols3 li { font-size: 28px; line-height: 1.35; color: var(--t1); padding-left: 34px; position: relative; margin-bottom: 16px; }
@@ -344,6 +350,27 @@
     <p class="lead r" style="--d:4; margin-top:30px; font-size:32px; max-width:1500px">Calcolato da <b style="color:#fff">codice deterministico coperto da test</b>, mai dall'LLM. In struttura convenzionata: 40&nbsp;€. Entro i primi 30 giorni: non coperto.</p>
   </section>
 
+  <!-- Efficienza token -->
+  <section class="slide" data-title="Pochi token">
+    <span class="eyebrow r">Efficienza</span>
+    <h2 class="r" style="--d:1">Pochi token, <span class="grad">solo dove servono.</span></h2>
+    <div class="grid2" style="margin-top:44px; grid-template-columns: 1.15fr .85fr; align-items:start">
+      <div class="card r" style="--d:2">
+        <div class="tok">
+          <div><div class="name">Guardiano · domande libere <em>−86%</em></div><div class="track"><div class="fill pre" style="--w:100%"></div></div><div class="track"><div class="fill post" style="--w:13.6%"></div></div><div class="legend"><span>prima ≈ 4.577 token</span><span>ora ≈ 624</span></div></div>
+          <div><div class="name">Quiz Coach <em>−53%</em></div><div class="track"><div class="fill pre" style="--w:63.8%"></div></div><div class="track"><div class="fill post" style="--w:30.1%"></div></div><div class="legend"><span>prima ≈ 2.919</span><span>ora ≈ 1.378</span></div></div>
+          <div><div class="name">Semplificatore <em>−32%</em></div><div class="track"><div class="fill pre" style="--w:16.8%"></div></div><div class="track"><div class="fill post" style="--w:11.5%"></div></div><div class="legend"><span>prima ≈ 769</span><span>ora ≈ 526</span></div></div>
+        </div>
+        <p class="small" style="margin-top:26px">Token in ingresso per chiamata, stima a 4 caratteri per token. Misurati da <b>npm run tokens</b>: i test falliscono se un agente supera il budget.</p>
+      </div>
+      <div class="compact" style="display:grid; gap:18px">
+        <div class="card tight hot r" style="--d:3"><h3>0 token per il percorso di Rosa</h3><p class="desc" style="margin-top:10px">Estrazione e quiz verificati a mano e già in cache. Calcoli, verifica e guardrail sono codice.</p></div>
+        <div class="card tight r" style="--d:4"><h3>Mai due volte la stessa domanda</h3><p class="desc" style="margin-top:10px">Cache per agente, modello e prompt. Le risposte scartate dal verificatore non entrano in cache.</p></div>
+        <div class="card tight r" style="--d:5"><h3>Solo il contesto che serve</h3><p class="desc" style="margin-top:10px">6 passaggi pertinenti invece dell'intera polizza. PDF letti come testo, non come immagini.</p></div>
+      </div>
+    </div>
+  </section>
+
   <!-- 10 · Apprendimento -->
   <section class="slide" data-title="Apprendimento misurato">
     <span class="eyebrow r">Apprendimento misurato</span>
@@ -449,7 +476,7 @@
     <div class="grid2 cols3" style="margin-top:56px">
       <div class="card r" style="--d:2"><h3>Limiti di oggi</h3><ul>
         <li>Polizza di esempio inventata, non un prodotto reale</li>
-        <li>Verifica delle citazioni alla lettera solo su testo, non sui PDF</li>
+        <li>PDF scansionati: letti dal modello, ma citazioni non verificabili alla lettera</li>
         <li>Il guardrail a parole chiave si può aggirare: c'è anche il prompt</li>
         <li>Nessun test con utenti reali</li>
         <li>La qualità della voce dipende dal browser</li>
@@ -459,7 +486,7 @@
         <li>Altri prodotti: RC auto, casa, infortuni</li>
         <li>Spiegazioni nella lingua madre per chi parla italiano come seconda lingua</li>
         <li>Collegamento all'area clienti: polizza caricata in automatico</li>
-        <li>Verifica delle citazioni anche sul PDF, pagina per pagina</li>
+        <li>Token reali misurati con l'API su un set di polizze vere, per tarare i budget</li>
       </ul></div>
     </div>
   </section>
