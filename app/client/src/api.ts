@@ -30,6 +30,6 @@ export const api = {
   explain: (policy: Policy, coverageId: string, level: Exclude<Level, 'originale'>, mode: 'riformula' | 'esempio', cost?: number) =>
     post<{ text: string; attempts: number; fallback: boolean; issues: string[] }>('/api/explain', { policy, coverageId, level, mode, cost }),
   quiz: (policy: Policy) => post<{ questions: QuizQuestion[]; fallback: boolean }>('/api/quiz', { policy }),
-  ask: (policy: Policy, question: string) =>
-    post<{ outOfScope: boolean; answer: string; sources: SourceRef[]; guard?: string }>('/api/ask', { policy, question }),
+  ask: (policy: Policy, question: string, sourceText?: string) =>
+    post<{ outOfScope: boolean; answer: string; sources: SourceRef[]; guard?: string }>('/api/ask', { policy, question, sourceText }),
 };

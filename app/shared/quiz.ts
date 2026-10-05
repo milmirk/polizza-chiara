@@ -1,7 +1,7 @@
 import { simulate } from './calculator';
 import type { Policy, QuizQuestion, Regime } from './types';
 
-const eur = (n: number) => `${n.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} €`;
+const eur = (n: number) => `${n.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2, useGrouping: 'always' } as Intl.NumberFormatOptions)} €`;
 
 interface Scenario {
   coverageId: string;

@@ -1,7 +1,7 @@
 import type { Policy, SimulationInput, SimulationResult, SimulationStep } from './types';
 
 const eur = (n: number) =>
-  n.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 });
+  n.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, useGrouping: 'always' } as Intl.NumberFormatOptions);
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 

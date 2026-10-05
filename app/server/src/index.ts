@@ -139,14 +139,70 @@ app.post('/api/quiz', async (req, res) => {
   }
 });
 
+const STOP = new Set(['sono', 'della', 'delle', 'nella', 'nelle', 'quando', 'come', 'cosa', 'questa', 'questo', 'polizza', 'coperto', 'coperti', 'coperta', 'coperte', 'devo', 'posso', 'anche']);
+const stem = (w: string) => w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').slice(0, 5);
+
+function textPassages(sourceText?: string): SourceRef[] {
+  if (!sourceText) return [];
+  const out: SourceRef[] = [];
+  let page: number | null = null;
+  let article = '';
+  for (const raw of sourceText.split('\n')) {
+    const line = raw.trim();
+    const p = line.match(/^--- Pagina (\d+) ---$/);
+    if (p) { page = Number(p[1]); continue; }
+    const a = line.match(/^#+\s*(Art\. \d+)/);
+    if (a) { article = a[1]; continue; }
+    if (line.length > 30 && !line.startsWith('#')) out.push({ quote: line.replace(/^[-*]\s*/, '').replace(/\*\*/g, ''), page, article });
+  }
+  return out;
+}
+
+function keywordAnswer(policy: Policy, question: string, sourceText?: string) {
+  const words = question.split(/[^\p{L}]+/u).filter((w) => w.length >= 4 && !STOP.has(w.toLowerCase())).map(stem);
+  const score = (t: string) => {
+    const ts = new Set(t.split(/[^\p{L}]+/u).filter((w) => w.length >= 4).map(stem));
+    return words.filter((w) => ts.has(w)).length;
+  };
+  const candidates = [
+    ...policy.exclusions.map((e) => ({ kind: 'esclusione' as const, label: e.plain ?? e.text, source: e.source, s: score(`${e.text} ${e.plain ?? ''} ${e.source.quote}`) })),
+    ...policy.coverages.flatMap((c) => c.source.map((src) => ({ kind: 'garanzia' as const, label: c.name, source: src, s: score(`${c.name} ${c.examples.join(' ')} ${src.quote}`) }))),
+    ...policy.glossary.flatMap((g) => (g.source ? [{ kind: 'termine' as const, label: `${g.term}: ${g.definition}`, source: g.source, s: score(`${g.term} ${g.definition}`) }] : [])),
+    ...textPassages(sourceText).map((src) => ({ kind: 'testo' as const, label: '', source: src, s: score(src.quote) })),
+  ]
+    .filter((c) => c.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .filter((c, i, all) => all.findIndex((x) => x.source.quote === c.source.quote) === i && c.s >= all[0].s)
+    .slice(0, 2);
+
+  if (candidates.length === 0) {
+    return { outOfScope: false, answer: 'Non ho trovato questo argomento nella tua polizza. Prova con altre parole, oppure chiedi alla tua agenzia.', sources: [], fallback: true };
+  }
+  const top = candidates[0];
+  const answer =
+    top.kind === 'esclusione'
+      ? `Questo è tra le cose che la polizza NON copre: ${top.label}`
+      : top.kind === 'garanzia'
+        ? `Ne parla la garanzia "${top.label}". Ecco il testo della polizza.`
+        : top.kind === 'testo'
+          ? `Ecco cosa dice la tua polizza (${top.source.article}).`
+          : top.label;
+  return { outOfScope: false, answer: `${answer} (Ricerca nel testo, senza AI.)`, sources: candidates.map((c) => c.source), fallback: true };
+}
+
 app.post('/api/ask', async (req, res) => {
-  const { policy, question } = req.body as { policy: Policy; question: string };
+  const { policy, question, sourceText } = req.body as { policy: Policy; question: string; sourceText?: string };
   const pre = checkQuestion(question);
   if (pre.blocked) return res.json({ outOfScope: true, answer: pre.message, sources: [], guard: pre.kind });
-  if (!hasApiKey) {
-    return res.json({ outOfScope: false, answer: 'Le domande libere richiedono la connessione all\'AI. Usa le schede delle garanzie e il simulatore.', sources: [], fallback: true });
+  if (!hasApiKey) return res.json(keywordAnswer(policy, question, sourceText));
+  const doc = sourceText ? `\n\nTesto completo della polizza:\n<documento>\n${sourceText}\n</documento>` : '';
+  let out;
+  try {
+    out = await structured(prompt('guardian'), `Polizza strutturata:\n${JSON.stringify(policy)}${doc}\n\nDomanda: ${question}`, AskSchema);
+  } catch (err) {
+    console.error('[ask] fallback:', (err as Error).message);
+    return res.json(keywordAnswer(policy, question, sourceText));
   }
-  const out = await structured(prompt('guardian'), `Polizza:\n${JSON.stringify(policy)}\n\nDomanda: ${question}`, AskSchema);
   const post = checkAnswer(out.answer);
   if (post.blocked) return res.json({ outOfScope: true, answer: post.message, sources: [], guard: post.kind });
   res.json({ ...out, sources: out.sources as SourceRef[] });
