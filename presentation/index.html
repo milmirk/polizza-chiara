@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Polizza Chiara · Hagenthon</title>
+<style>
+  :root {
+    --p: #A100FF;
+    --p2: #7500C0;
+    --p3: #460073;
+    --pl: #BE82FF;
+    --pll: #DCAFFF;
+    --rose: #FF50A0;
+    --ok: #4ADE80;
+    --t1: rgba(255,255,255,0.92);
+    --t2: rgba(255,255,255,0.62);
+    --t3: rgba(255,255,255,0.38);
+    --line: rgba(255,255,255,0.12);
+    --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: #fff; overflow: hidden; }
+  body { font-family: "Graphik", "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+
+  .deck { position: fixed; inset: 0; overflow: hidden; }
+  .stage { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; transform-origin: center center; }
+
+  .slide {
+    position: absolute; inset: 0; padding: 120px 150px 110px; display: flex; flex-direction: column;
+    opacity: 0; visibility: hidden; transition: opacity .7s var(--ease), visibility .7s;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; visibility: visible; }
+
+  .r { opacity: 0; transform: translateY(46px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: calc(var(--d, 0) * 110ms); }
+  .slide.active .r { opacity: 1; transform: none; }
+  .frag { opacity: 0; transform: translateY(28px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .frag.on { opacity: 1; transform: none; }
+
+  .glow { position: absolute; width: 1400px; height: 1400px; border-radius: 50%; background: radial-gradient(circle, rgba(161,0,255,.32), rgba(161,0,255,0) 62%); pointer-events: none; filter: blur(10px); }
+  .bigmark {
+    position: absolute; right: -60px; bottom: -260px; font-size: 1500px; line-height: 1; font-weight: 800;
+    background: linear-gradient(160deg, rgba(161,0,255,.55), rgba(70,0,115,0) 70%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; pointer-events: none; user-select: none;
+  }
+
+  .eyebrow { font-size: 22px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: var(--pl); }
+  h1 { font-size: 190px; line-height: .95; letter-spacing: -.045em; margin: 34px 0 0; font-weight: 800; }
+  h2 { font-size: 88px; line-height: 1.02; letter-spacing: -.035em; margin: 26px 0 0; font-weight: 750; }
+  h3 { font-size: 38px; margin: 0; letter-spacing: -.015em; font-weight: 700; }
+  p { margin: 0; }
+  .gt { color: var(--p); }
+  .grad { background: linear-gradient(90deg, var(--pll), var(--p)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: 40px; line-height: 1.35; color: var(--t2); max-width: 1300px; }
+  .muted { color: var(--t2); }
+  .small { font-size: 24px; color: var(--t3); }
+  .spacer { flex: 1; }
+
+  .tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(161,0,255,.6); background: rgba(161,0,255,.12); color: var(--pll); border-radius: 999px; padding: 10px 22px; font-size: 22px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+
+  .card { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 28px; padding: 42px; }
+  .card.tight { padding: 28px 36px; }
+  .compact h3 { font-size: 31px; }
+  .compact .card p.desc { font-size: 25px; }
+  .card.hot { border-color: rgba(161,0,255,.55); background: linear-gradient(160deg, rgba(161,0,255,.18), rgba(161,0,255,.03)); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+
+  .stat { font-size: 112px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .stat small { font-size: 40px; font-weight: 600; color: var(--pl); letter-spacing: 0; }
+  .card p.desc { font-size: 28px; line-height: 1.35; color: var(--t2); margin-top: 18px; }
+
+  .legal { font-family: Georgia, "Times New Roman", serif; font-size: 40px; line-height: 1.5; color: rgba(255,255,255,.82); }
+  .legal mark { background: none; color: inherit; position: relative; white-space: nowrap; }
+  .legal mark::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: 2px; height: 0; background: rgba(161,0,255,.55); z-index: -1; transition: height .5s var(--ease); transition-delay: calc(.9s + var(--m, 0) * 260ms); }
+  .slide.active .legal mark::after { height: 48%; }
+  .legal mark { z-index: 0; }
+  .quote-src { font-size: 22px; color: var(--t3); margin-top: 20px; letter-spacing: .05em; }
+
+  .plain { font-size: 40px; line-height: 1.4; font-weight: 500; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+  .tile { border-radius: 22px; padding: 28px 32px; }
+  .tile .lbl { font-size: 26px; color: var(--t2); }
+  .tile .val { font-size: 64px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; margin-top: 6px; }
+  .tile.you { background: #fff; color: #000; }
+  .tile.you .lbl { color: #333; }
+  .tile.them { background: rgba(161,0,255,.22); border: 1px solid rgba(161,0,255,.6); }
+
+  .flow { display: grid; grid-template-columns: 1.1fr 72px 1.6fr 72px .9fr; align-items: stretch; margin-top: 48px; }
+  .flow .arrow { display: grid; place-items: center; font-size: 64px; color: var(--p); font-weight: 800; }
+  .flowgroup { border: 1px solid var(--line); border-radius: 30px; padding: 30px; background: rgba(255,255,255,.03); }
+  .flowgroup.mid { border-color: rgba(161,0,255,.55); background: rgba(161,0,255,.08); }
+  .flowgroup .eyebrow { font-size: 18px; }
+  .pill { display: block; border-radius: 18px; background: rgba(255,255,255,.07); padding: 18px 24px; margin-top: 14px; }
+  .pill b { display: block; font-size: 32px; }
+  .pill span { display: block; font-size: 22px; color: var(--t2); margin-top: 6px; line-height: 1.3; }
+
+  .arch { position: relative; margin-top: 50px; height: 640px; }
+  .node { position: absolute; border-radius: 26px; padding: 26px 30px; width: 400px; }
+  .node .k { font-size: 18px; letter-spacing: .25em; text-transform: uppercase; font-weight: 700; }
+  .node b { display: block; font-size: 36px; margin-top: 8px; }
+  .node span { display: block; font-size: 23px; color: var(--t2); margin-top: 8px; line-height: 1.3; }
+  .node.ai { border: 2px solid var(--p); background: #1b0a2b; }
+  .node.ai .k { color: var(--pl); }
+  .node.code { border: 2px dashed rgba(255,255,255,.55); background: #0e0e10; }
+  .node.code .k { color: rgba(255,255,255,.7); }
+  .arch svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .arch path { fill: none; stroke: rgba(190,130,255,.7); stroke-width: 3; stroke-dasharray: 10 10; }
+  .slide.active .arch path { animation: dash 1.6s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -40; } }
+
+  .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 70px; }
+  .step { border-radius: 26px; padding: 34px; border: 1px solid var(--line); background: rgba(255,255,255,.035); position: relative; }
+  .step .n { font-size: 20px; letter-spacing: .25em; text-transform: uppercase; color: var(--t3); font-weight: 700; }
+  .step h3 { margin-top: 14px; font-size: 34px; }
+  .step p { font-size: 27px; line-height: 1.35; color: var(--t2); margin-top: 16px; }
+  .step.bad { border-color: rgba(255,80,160,.7); background: rgba(255,80,160,.08); }
+  .step.good { border-color: rgba(74,222,128,.7); background: rgba(74,222,128,.07); }
+  .mono { font-family: "Cascadia Code", Consolas, "SF Mono", monospace; font-size: 24px; background: rgba(0,0,0,.4); border-radius: 12px; padding: 14px 16px; margin-top: 18px; color: #fff; line-height: 1.4; }
+  .x { color: var(--rose); font-weight: 800; }
+  .v { color: var(--ok); font-weight: 800; }
+
+  .chain { display: flex; flex-direction: column; gap: 14px; margin-top: 36px; max-width: 1300px; }
+  .link { display: grid; grid-template-columns: 80px 1fr auto; align-items: center; gap: 28px; border-radius: 22px; padding: 18px 32px; background: rgba(255,255,255,.045); border: 1px solid var(--line); }
+  .link .i { font-size: 46px; font-weight: 800; color: var(--p); }
+  .link .what { font-size: 32px; font-weight: 600; }
+  .link .what small { display: block; font-size: 24px; color: var(--t2); font-weight: 400; margin-top: 4px; }
+  .link .amt { font-size: 44px; font-weight: 800; letter-spacing: -.02em; }
+  .link.final { background: linear-gradient(90deg, rgba(161,0,255,.35), rgba(161,0,255,.08)); border-color: var(--p); }
+  .strike { text-decoration: line-through; color: var(--t3); }
+
+  .bars { margin-top: 30px; display: grid; gap: 34px; }
+  .barrow .top { display: flex; justify-content: space-between; font-size: 34px; }
+  .barrow .top b { font-size: 34px; }
+  .track { height: 44px; border-radius: 999px; background: rgba(255,255,255,.08); margin-top: 12px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; width: 0; transition: width 1.4s var(--ease); transition-delay: .8s; }
+  .slide.active .fill { width: var(--w); }
+  .fill.pre { background: rgba(255,255,255,.4); }
+  .fill.post { background: linear-gradient(90deg, var(--p2), var(--p)); }
+  .levels { display: flex; gap: 18px; align-items: center; margin-top: 26px; font-size: 30px; }
+  .lv { border-radius: 999px; padding: 12px 26px; border: 1px solid var(--line); color: var(--t2); }
+  .lv.on { border-color: var(--p); background: rgba(161,0,255,.2); color: #fff; font-weight: 700; }
+
+  .cols3 h3 { font-size: 36px; }
+  .cols3 ul { list-style: none; padding: 0; margin: 22px 0 0; }
+  .cols3 li { font-size: 28px; line-height: 1.35; color: var(--t1); padding-left: 34px; position: relative; margin-bottom: 16px; }
+  .cols3 li::before { content: "›"; position: absolute; left: 0; color: var(--p); font-weight: 800; }
+  .guard { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 34px; }
+  .chat { border-radius: 24px; padding: 26px 32px; background: rgba(255,80,160,.07); border: 1px solid rgba(255,80,160,.45); }
+  .chat .q { font-size: 30px; font-weight: 600; }
+  .chat .a { font-size: 25px; color: var(--t2); margin-top: 10px; line-height: 1.35; }
+  .chat .badge { display: inline-block; font-size: 18px; letter-spacing: .15em; text-transform: uppercase; color: var(--rose); font-weight: 700; margin-bottom: 10px; }
+
+  .feat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 44px; }
+  .feat .card { padding: 28px 32px; }
+  .feat .ic { font-size: 48px; font-weight: 800; color: var(--p); line-height: 1; height: 54px; }
+  .feat h3 { margin-top: 12px; font-size: 32px; }
+  .feat p { font-size: 24px; color: var(--t2); line-height: 1.35; margin-top: 12px; }
+
+  .tree { font-family: "Cascadia Code", Consolas, "SF Mono", monospace; font-size: 27px; line-height: 1.62; color: var(--t1); white-space: pre; }
+  .tree .c { color: var(--t3); }
+  .tree .h { color: var(--pl); font-weight: 700; }
+  table.rev { width: 100%; border-collapse: collapse; font-size: 25px; }
+  table.rev th { text-align: left; font-size: 19px; letter-spacing: .2em; text-transform: uppercase; color: var(--pl); padding: 0 18px 14px 0; font-weight: 700; }
+  table.rev td { padding: 15px 18px 15px 0; border-top: 1px solid var(--line); vertical-align: top; line-height: 1.32; color: var(--t1); }
+  table.rev td:first-child { font-weight: 700; white-space: nowrap; }
+
+  .demo { counter-reset: d; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 60px; margin-top: 60px; }
+  .demo li { list-style: none; font-size: 34px; line-height: 1.3; display: grid; grid-template-columns: 76px 1fr; align-items: start; }
+  .demo li::before { counter-increment: d; content: counter(d); font-size: 30px; font-weight: 800; color: #000; background: var(--p); border-radius: 50%; width: 54px; height: 54px; display: grid; place-items: center; }
+  .demo li span { display: block; font-size: 25px; color: var(--t2); margin-top: 6px; }
+
+  .closing h2 { font-size: 120px; }
+
+  .progress { position: fixed; left: 0; top: 0; height: 5px; width: 100%; background: rgba(255,255,255,.06); z-index: 10; }
+  .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--p2), var(--p)); transition: width .5s var(--ease); }
+  .hud { position: fixed; right: 28px; bottom: 20px; font-size: 14px; letter-spacing: .2em; color: rgba(255,255,255,.4); z-index: 10; font-variant-numeric: tabular-nums; }
+  .brandbar { position: absolute; left: 150px; right: 150px; bottom: 44px; display: flex; justify-content: space-between; font-size: 18px; letter-spacing: .25em; text-transform: uppercase; color: rgba(255,255,255,.3); }
+  .brandbar b { color: rgba(255,255,255,.55); font-weight: 700; }
+  .help { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); font-size: 13px; color: rgba(255,255,255,.4); z-index: 10; letter-spacing: .05em; transition: opacity .6s; }
+  .help.gone { opacity: 0; }
+  @media print { .progress, .hud, .help { display: none; } }
+</style>
+</head>
+<body>
+<div class="progress"><span id="bar"></span></div>
+<div class="hud" id="hud"></div>
+<div class="help">← → per navigare · F schermo intero</div>
+
+<div class="deck">
+<div class="stage" id="stage">
+
+  <!-- 1 · Titolo -->
+  <section class="slide" data-title="Titolo">
+    <div class="glow" style="left:-400px; top:-500px"></div>
+    <div class="bigmark">&gt;</div>
+    <div class="spacer"></div>
+    <span class="eyebrow r" style="--d:1">Hagenthon · Tema 02 · Inclusione Finanziaria</span>
+    <h1 class="r" style="--d:2">Polizza<br>Chiara<span class="gt">&gt;</span></h1>
+    <p class="lead r" style="--d:4; margin-top:46px; max-width:1150px">Aiutiamo chi ha una polizza salute a capire <b style="color:#fff">cosa copre</b> e <b style="color:#fff">quanto paga davvero</b>. Senza dire mai cosa scegliere.</p>
+    <div class="spacer"></div>
+    <div class="brandbar r" style="--d:6"><span><b>Accenture</b> · Application Engineering</span><span>github.com/milmirk/contest_unipol</span></div>
+  </section>
+
+  <!-- 2 · Problema -->
+  <section class="slide" data-title="Il problema">
+    <span class="eyebrow r">Il problema</span>
+    <h2 class="r" style="--d:1">La polizza c'è.<br><span class="grad">Capirla è un altro discorso.</span></h2>
+    <div class="grid3" style="margin-top:56px">
+      <div class="card r" style="--d:3"><div class="stat">5<small> pagine</small></div><p class="desc">di condizioni di assicurazione, in 11 articoli. Per una sola polizza salute.</p></div>
+      <div class="card r" style="--d:4"><div class="stat">8<small> parole tecniche</small></div><p class="desc">franchigia, scoperto, carenza, massimale, sottolimite, forma diretta e indiretta, preesistenza.</p></div>
+      <div class="card hot r" style="--d:5"><div class="stat">4<small> regole insieme</small></div><p class="desc">per ogni singola spesa: carenza, franchigia o scoperto, minimo, limite annuo. Il conto lo deve fare la persona.</p></div>
+    </div>
+    <p class="lead r" style="--d:7; margin-top:48px; font-size:36px">Chi ha poca familiarità con la finanza non sa quanto pagherà. <b style="color:#fff">Rinuncia a capire</b>, oppure scopre il costo quando la fattura è già arrivata.</p>
+  </section>
+
+  <!-- 3 · Persona -->
+  <section class="slide" data-title="Persona">
+    <div class="glow" style="right:-600px; top:-300px"></div>
+    <span class="tag r">Deliverable 01 · User Difficulty Statement</span>
+    <div class="grid2" style="margin-top:56px; grid-template-columns: 1.05fr 1fr; align-items:start">
+      <div>
+        <h2 class="r" style="--d:1; margin-top:0; font-size:112px">Rosa,<br>66 anni<span class="gt">&gt;</span></h2>
+        <p class="lead r" style="--d:2; margin-top:30px">Pensionata, licenza media. Ha una polizza salute integrativa. Non l'ha mai aperta.</p>
+        <p class="r" style="--d:3; margin-top:60px; font-family:Georgia,serif; font-size:52px; line-height:1.3; font-style:italic; color:#fff">«Ce l'ho, la polizza.<br>Ma la risonanza me la pagano?»</p>
+      </div>
+      <div style="display:grid; gap:20px">
+        <div class="card tight r" style="--d:4"><span class="eyebrow" style="font-size:18px">Cosa deve fare</span><p style="font-size:34px; margin-top:12px; line-height:1.35">Una <b>risonanza magnetica</b> (circa 250&nbsp;€) e forse un <b>day hospital</b>.</p></div>
+        <div class="card tight hot r" style="--d:5"><span class="eyebrow" style="font-size:18px">Dove si blocca</span><p style="font-size:34px; margin-top:12px; line-height:1.35">Davanti alle Condizioni di assicurazione. Non sa se è coperta, se è ancora nel periodo di carenza, cosa cambia tra struttura convenzionata e non, <b>quanto le resta da pagare</b>.</p></div>
+        <div class="card tight r" style="--d:6"><span class="eyebrow" style="font-size:18px">Perché conta</span><p style="font-size:34px; margin-top:12px; line-height:1.35">Senza capire, o rinuncia alla prestazione o paga senza sapere perché.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · Il muro -->
+  <section class="slide" data-title="Il muro">
+    <span class="eyebrow r">Prima</span>
+    <h2 class="r" style="--d:1">Questo è ciò che legge Rosa.</h2>
+    <div class="card r" style="--d:3; margin-top:60px; padding:56px 64px; max-width:1500px">
+      <p class="legal">
+        <b style="font-family:inherit">Art. 6 – Alta specializzazione diagnostica.</b> La garanzia è prestata entro il <mark style="--m:0">sottolimite annuo</mark> di €&nbsp;5.000,00 per Assicurato. <mark style="--m:1">Forma indiretta</mark>: applicazione di uno <mark style="--m:2">scoperto</mark> del 25% con il <mark style="--m:3">minimo non indennizzabile</mark> di €&nbsp;80,00 per ciascun accertamento. Le garanzie decorrono, per le malattie, dal 30° giorno successivo a quello di <mark style="--m:4">decorrenza</mark> della polizza.
+      </p>
+      <p class="quote-src">Condizioni di assicurazione · Art. 3 e Art. 6 · pagine 2-3</p>
+    </div>
+    <p class="frag" style="margin-top:56px; font-size:56px; font-weight:700">Risonanza da 250&nbsp;€ fuori rete. <span class="grad">Quanto paga Rosa?</span></p>
+  </section>
+
+  <!-- 5 · Prima / Dopo -->
+  <section class="slide" data-title="Prima e dopo">
+    <span class="tag r">Deliverable 02 · Before / After Simplicity Evidence</span>
+    <div class="grid2" style="margin-top:40px; align-items:stretch">
+      <div class="card r" style="--d:1">
+        <span class="eyebrow" style="color:var(--t3)">Prima · testo originale</span>
+        <p class="legal" style="font-size:36px; margin-top:26px">“Forma indiretta: applicazione di uno scoperto del 25% con il minimo non indennizzabile di €&nbsp;80,00 per ciascun accertamento.”</p>
+        <p class="quote-src">Art. 6 · pagina 3</p>
+      </div>
+      <div class="card hot r" style="--d:3">
+        <span class="eyebrow">Dopo · Polizza Chiara</span>
+        <p class="plain" style="margin-top:26px">In un centro non convenzionato paghi tu e poi ti rimborsano. Ti resta da pagare un quarto della spesa (25%). Comunque almeno 80 euro.</p>
+        <div class="tiles">
+          <div class="tile you frag"><div class="lbl">Paghi tu</div><div class="val" data-count="80">80&nbsp;€</div></div>
+          <div class="tile them frag"><div class="lbl">Paga la compagnia</div><div class="val" data-count="170">170&nbsp;€</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="lead r" style="--d:5; margin-top:34px; font-size:34px">Stesso significato, stesse cifre. <b style="color:#fff">La citazione originale resta sempre accanto</b>, con articolo e pagina.</p>
+  </section>
+
+  <!-- 6 · Soluzione -->
+  <section class="slide" data-title="La soluzione">
+    <span class="eyebrow r">La soluzione</span>
+    <h2 class="r" style="--d:1">Un percorso guidato.<br><span class="grad">Non un chatbot.</span></h2>
+    <div class="flow">
+      <div class="flowgroup r" style="--d:3">
+        <span class="eyebrow">Inizia</span>
+        <div class="pill"><b>La polizza</b><span>Carichi il PDF: l'AI lo legge e lo struttura, con le citazioni.</span></div>
+        <div class="pill"><b>Quiz iniziale</b><span>Misura da dove parti. “Non lo so” va benissimo.</span></div>
+      </div>
+      <div class="arrow r" style="--d:4">&gt;</div>
+      <div class="flowgroup mid r" style="--d:5">
+        <span class="eyebrow">Esplora quando vuoi</span>
+        <div class="pill"><b>Le garanzie</b><span>Semplice · medio · testo originale, sempre affiancati. Glossario ed esclusioni.</span></div>
+        <div class="pill"><b>Quanto pago io?</b><span>Prestazione, costo, struttura, data: il conto passo per passo.</span></div>
+        <div class="pill"><b>Domande</b><span>Risposte solo dalla polizza. Niente consigli.</span></div>
+      </div>
+      <div class="arrow r" style="--d:6">&gt;</div>
+      <div class="flowgroup r" style="--d:7">
+        <span class="eyebrow">Alla fine</span>
+        <div class="pill"><b>Verifica finale</b><span>Nuove domande, confronto prima e dopo.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · Architettura -->
+  <section class="slide" data-title="Architettura agentica">
+    <span class="eyebrow r">Struttura agentica</span>
+    <h2 class="r" style="--d:1">4 agenti AI. <span class="grad">Il codice li controlla.</span></h2>
+    <div class="arch r" style="--d:2">
+      <svg viewBox="0 0 1620 640" preserveAspectRatio="none">
+        <path d="M400 110 C 470 110, 470 110, 560 110" />
+        <path d="M960 110 C 1060 110, 1060 70, 1220 70" />
+        <path d="M960 130 C 1060 130, 1080 300, 1220 300" />
+        <path d="M960 150 C 1060 150, 1080 530, 1220 530" />
+        <path d="M760 200 C 760 300, 760 330, 760 400" />
+        <path d="M960 470 C 1080 470, 1100 320, 1220 320" />
+        <path d="M960 440 C 1100 440, 1080 120, 1220 120" />
+      </svg>
+      <div class="node ai" style="left:0; top:30px"><span class="k">Agente AI</span><b>Estrattore</b><span>Polizza → dati strutturati (schema Zod), ogni voce con citazione e pagina.</span></div>
+      <div class="node code" style="left:560px; top:30px"><span class="k">Codice</span><b>Verificatore</b><span>Citazioni presenti alla lettera, nessun numero inventato.</span></div>
+      <div class="node code" style="left:560px; top:400px"><span class="k">Codice</span><b>Calcolatore</b><span>Carenza, franchigia, scoperto, minimo, sottolimite. Testato.</span></div>
+      <div class="node ai" style="left:1220px; top:0"><span class="k">Agente AI</span><b>Spiegatore</b><span>Semplice, medio, esempio. Si autocorregge.</span></div>
+      <div class="node ai" style="left:1220px; top:230px"><span class="k">Agente AI</span><b>Quiz Coach</b><span>Domande adattive su 3 livelli.</span></div>
+      <div class="node ai" style="left:1220px; top:460px"><span class="k">Agente AI</span><b>Guardiano</b><span>Risponde solo dalla polizza, blocca consulenza.</span></div>
+    </div>
+    <p class="r" style="--d:5; font-size:46px; font-weight:700; margin-top:10px">L'AI semplifica. <span class="grad">Il codice garantisce.</span></p>
+  </section>
+
+  <!-- 8 · Autocorrezione -->
+  <section class="slide" data-title="Autocorrezione">
+    <span class="eyebrow r">Il ciclo agentico</span>
+    <h2 class="r" style="--d:1">Se l'AI inventa un numero,<br><span class="grad">a Rosa non arriva.</span></h2>
+    <div class="loop">
+      <div class="step r" style="--d:3"><span class="n">1 · Spiegatore</span><h3>Scrive</h3><div class="mono">“…in un centro convenzionato paghi solo <span class="x">35</span> euro.”</div></div>
+      <div class="step bad frag"><span class="n">2 · Verificatore</span><h3><span class="x">✗</span> Scarta</h3><div class="mono">Il numero 35 non compare nelle condizioni della garanzia.</div></div>
+      <div class="step frag"><span class="n">3 · Spiegatore</span><h3>Riscrive</h3><p>Riceve il motivo dello scarto e rigenera. Massimo 2 tentativi.</p></div>
+      <div class="step good frag"><span class="n">4 · Rosa</span><h3><span class="v">✓</span> Legge</h3><p>Solo testi verificati. Se il ciclo fallisce: testo deterministico già controllato.</p></div>
+    </div>
+    <p class="lead r" style="--d:5; margin-top:60px">Lo stesso verificatore ha trovato errori anche nei <b style="color:#fff">nostri</b> dati di esempio: due citazioni che univano righe diverse del documento. Le abbiamo corrette.</p>
+  </section>
+
+  <!-- 9 · Calcolo -->
+  <section class="slide" data-title="Quanto pago io">
+    <span class="eyebrow r">Quanto pago io?</span>
+    <h2 class="r" style="--d:1">Il conto, passo per passo.</h2>
+    <div class="chain">
+      <div class="link r" style="--d:2"><span class="i">1</span><span class="what">Fattura della risonanza<small>Struttura non convenzionata, polizza attiva da più di 30 giorni</small></span><span class="amt">250,00&nbsp;€</span></div>
+      <div class="link frag"><span class="i">2</span><span class="what">Scoperto del 25%<small>Art. 6 · pagina 3</small></span><span class="amt strike">62,50&nbsp;€</span></div>
+      <div class="link frag"><span class="i">3</span><span class="what">Ma il minimo è 80&nbsp;€<small>“minimo non indennizzabile di €&nbsp;80,00”</small></span><span class="amt">80,00&nbsp;€</span></div>
+      <div class="link final frag"><span class="i">=</span><span class="what">Rosa paga 80&nbsp;€, la compagnia le rimborsa 170&nbsp;€<small>Prima paga lei tutta la fattura, poi chiede il rimborso</small></span><span class="amt">80&nbsp;€ · 170&nbsp;€</span></div>
+    </div>
+    <p class="lead r" style="--d:4; margin-top:30px; font-size:32px; max-width:1500px">Calcolato da <b style="color:#fff">codice deterministico coperto da test</b>, mai dall'LLM. In struttura convenzionata: 40&nbsp;€. Entro i primi 30 giorni: non coperto.</p>
+  </section>
+
+  <!-- 10 · Apprendimento -->
+  <section class="slide" data-title="Apprendimento misurato">
+    <span class="eyebrow r">Apprendimento misurato</span>
+    <h2 class="r" style="--d:1">Prima e dopo, con un quiz<br><span class="grad">che si adatta a Rosa.</span></h2>
+    <div class="grid2" style="margin-top:44px; align-items:start">
+      <div>
+        <div class="bars">
+          <div class="barrow r" style="--d:3"><div class="top"><span>Quiz iniziale</span><b>1 su 4</b></div><div class="track"><div class="fill pre" style="--w:25%"></div></div></div>
+          <div class="barrow r" style="--d:4"><div class="top"><span>Verifica finale</span><b>4 su 4</b></div><div class="track"><div class="fill post" style="--w:100%"></div></div></div>
+        </div>
+        <div class="levels r" style="--d:5"><span class="lv">base</span><span class="gt">&gt;</span><span class="lv">intermedio</span><span class="gt">&gt;</span><span class="lv on">avanzato</span></div>
+        <p class="small r" style="--d:6; margin-top:24px">Percorso di prova nella demo, non una sperimentazione con utenti reali.</p>
+      </div>
+      <div class="compact" style="display:grid; gap:18px">
+        <div class="card tight r" style="--d:4"><h3>Si adatta</h3><p class="desc" style="margin-top:10px">Risposta giusta: domanda più difficile. Sbagliata: più semplice. Sempre l'opzione “Non lo so”.</p></div>
+        <div class="card tight r" style="--d:5"><h3>Domande di calcolo dal motore</h3><p class="desc" style="margin-top:10px">La risposta giusta la calcola il codice: il quiz non può sbagliare i conti.</p></div>
+        <div class="card tight r" style="--d:6"><h3>Domande di concetto dall'agente</h3><p class="desc" style="margin-top:10px">Generate sulla polizza di Rosa, ognuna con la citazione che prova la risposta.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · Risk & Clarity -->
+  <section class="slide" data-title="Risk e Clarity">
+    <span class="tag r">Deliverable 03 · Risk &amp; Clarity Note</span>
+    <div class="grid3 cols3" style="margin-top:50px">
+      <div class="card r" style="--d:1"><h3>Cosa semplifichiamo</h3><ul><li>Il linguaggio: frasi brevi, seconda persona</li><li>Un concetto per frase</li><li>I termini, con un glossario cliccabile</li></ul></div>
+      <div class="card hot r" style="--d:2"><h3>Cosa non tocchiamo mai</h3><ul><li>Importi, percentuali, giorni</li><li>Condizioni ed esclusioni</li><li>Il testo originale, citato alla lettera</li></ul></div>
+      <div class="card r" style="--d:3"><h3>Come evitiamo l'ambiguità</h3><ul><li>Citazione con articolo e pagina accanto a ogni frase</li><li>Verifica automatica dei numeri</li><li>Calcoli solo in codice</li></ul></div>
+    </div>
+    <div class="guard">
+      <div class="chat frag"><span class="badge">Consulenza finanziaria · bloccata</span><p class="q">«Mi conviene cambiare polizza?»</p><p class="a">Questa è una scelta personale e non posso consigliarti. Posso spiegarti cosa dice la tua polizza. Per un consiglio parla con la tua agenzia.</p></div>
+      <div class="chat frag"><span class="badge">Consiglio medico · bloccato</span><p class="q">«Ho mal di schiena, devo fare la risonanza?»</p><p class="a">Non posso dare consigli medici. Per sintomi, esami o cure parla con il tuo medico.</p></div>
+    </div>
+  </section>
+
+  <!-- 12 · Accessibilità -->
+  <section class="slide" data-title="Pensata per Rosa">
+    <span class="eyebrow r">Pensata per Rosa</span>
+    <h2 class="r" style="--d:1">Accessibile prima ancora che intelligente.</h2>
+    <div class="feat">
+      <div class="card r" style="--d:2"><div class="ic">A<span style="font-size:42px">++</span></div><h3>Testo grande</h3><p>Tre dimensioni, alto contrasto, pulsanti larghi.</p></div>
+      <div class="card r" style="--d:3"><div class="ic">▶</div><h3>Voce naturale</h3><p>Una voce femminile italiana legge tutto, anche importi e articoli scritti per esteso.</p></div>
+      <div class="card r" style="--d:4"><div class="ic">?</div><h3>“Non lo so”</h3><p>Sempre possibile: sbagliare non è un problema.</p></div>
+      <div class="card r" style="--d:5"><div class="ic">↺</div><h3>Puoi cambiare idea</h3><p>Nel quiz scegli, ci ripensi, poi confermi.</p></div>
+      <div class="card r" style="--d:6"><div class="ic">1</div><h3>Una cosa alla volta</h3><p>Un'azione per schermata, nessun gergo senza spiegazione.</p></div>
+      <div class="card hot r" style="--d:7"><div class="ic">∞</div><h3>Funziona anche offline</h3><p>Senza AI l'app usa dati già verificati: la demo non si ferma.</p></div>
+    </div>
+  </section>
+
+  <!-- 13 · Come l'abbiamo costruita -->
+  <section class="slide" data-title="Come l'abbiamo costruita">
+    <span class="eyebrow r">Come l'abbiamo costruita</span>
+    <h2 class="r" style="--d:1">Agentic coding, con revisione umana.</h2>
+    <div class="grid2" style="margin-top:56px; grid-template-columns: .8fr 1.2fr; align-items:start">
+      <div class="card r" style="--d:2"><div class="tree"><span class="h">agents/</span>
+├─ <span class="h">prompts/</span>     <span class="c"># letti dal server</span>
+│  ├─ extractor.md
+│  ├─ explainer.md
+│  ├─ quiz-coach.md
+│  └─ guardian.md
+├─ <span class="h">skills/</span>
+│  └─ semplificazione-fedele
+├─ <span class="h">commands/</span>
+│  ├─ verifica-polizza
+│  └─ nuovo-scenario
+├─ <span class="h">workflows/</span>
+└─ CLAUDE.md</div></div>
+      <div class="card r" style="--d:3">
+        <table class="rev">
+          <thead><tr><th>Area</th><th>AI</th><th>Revisione umana</th></tr></thead>
+          <tbody>
+            <tr><td>Piano</td><td>Claude Code in plan mode</td><td>Tema, persona e vincoli scelti dal team</td></tr>
+            <tr><td>Estrazione</td><td>Agente Estrattore</td><td>JSON di riferimento controllato riga per riga</td></tr>
+            <tr><td>Calcolo</td><td>Codice generato</td><td>Casi di test calcolati a mano</td></tr>
+            <tr><td>Testi semplici</td><td>Agente Spiegatore</td><td>Letti pensando a Rosa, numeri vincolati dal codice</td></tr>
+            <tr><td>Guardrail</td><td>Prompt e filtri proposti</td><td>Casi vietati decisi sulle regole del tema</td></tr>
+            <tr><td>UI</td><td>Componenti generati</td><td>Provata in browser; navigazione, voce e quiz rivisti dal team</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Demo -->
+  <section class="slide" data-title="Demo">
+    <div class="glow" style="left:30%; top:-700px"></div>
+    <span class="eyebrow r">Demo live</span>
+    <h2 class="r" style="--d:1">Il percorso di Rosa.</h2>
+    <ol class="demo" style="padding:0">
+      <li class="r" style="--d:2"><div>Carica la polizza<span>Prima il muro di testo, poi 6 garanzie verificate</span></div></li>
+      <li class="r" style="--d:3"><div>Quiz iniziale<span>Rosa risponde “Non lo so”: il livello scende</span></div></li>
+      <li class="r" style="--d:4"><div>Alta diagnostica<span>Semplice ↔ originale, “Fammi un esempio”, voce</span></div></li>
+      <li class="r" style="--d:5"><div>Quanto pago io?<span>250&nbsp;€ fuori rete → 80&nbsp;€. Poi una data nei primi 30 giorni</span></div></li>
+      <li class="r" style="--d:6"><div>Domande<span>“Gli occhiali sono coperti?” e “Mi conviene cambiare polizza?”</span></div></li>
+      <li class="r" style="--d:7"><div>Verifica finale<span>Il confronto prima e dopo</span></div></li>
+    </ol>
+  </section>
+
+  <!-- 15 · Limiti -->
+  <section class="slide" data-title="Limiti e prossimi passi">
+    <span class="eyebrow r">Onestà intellettuale</span>
+    <h2 class="r" style="--d:1">Limiti e prossimi passi.</h2>
+    <div class="grid2 cols3" style="margin-top:56px">
+      <div class="card r" style="--d:2"><h3>Limiti di oggi</h3><ul>
+        <li>Polizza di esempio inventata, non un prodotto reale</li>
+        <li>Verifica delle citazioni alla lettera solo su testo, non sui PDF</li>
+        <li>Il guardrail a parole chiave si può aggirare: c'è anche il prompt</li>
+        <li>Nessun test con utenti reali</li>
+        <li>La qualità della voce dipende dal browser</li>
+      </ul></div>
+      <div class="card hot r" style="--d:3"><h3>Prossimi passi</h3><ul>
+        <li>Test con 5 persone over 65 e misura dei tempi</li>
+        <li>Altri prodotti: RC auto, casa, infortuni</li>
+        <li>Spiegazioni nella lingua madre per chi parla italiano come seconda lingua</li>
+        <li>Collegamento all'area clienti: polizza caricata in automatico</li>
+        <li>Verifica delle citazioni anche sul PDF, pagina per pagina</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- 16 · Chiusura -->
+  <section class="slide closing" data-title="Chiusura">
+    <div class="glow" style="left:-300px; bottom:-700px"></div>
+    <div class="bigmark" style="opacity:.8">&gt;</div>
+    <div class="spacer"></div>
+    <h2 class="r" style="--d:1">Rosa adesso sa<br>quanto paga.</h2>
+    <h2 class="r" style="--d:3; margin-top:10px"><span class="grad">E sa dove è scritto.</span></h2>
+    <p class="lead r" style="--d:5; margin-top:60px">Polizza Chiara<span class="gt">&gt;</span> · github.com/milmirk/contest_unipol</p>
+    <div class="spacer"></div>
+    <div class="brandbar r" style="--d:6"><span><b>Accenture</b> · Application Engineering</span><span>Grazie</span></div>
+  </section>
+
+</div>
+</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const bar = document.getElementById('bar');
+  const hud = document.getElementById('hud');
+  let i = 0;
+
+  const fit = () => {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+  };
+
+  const countUp = (el) => {
+    const target = Number(el.dataset.count);
+    const t0 = performance.now();
+    const tick = (t) => {
+      const k = Math.min((t - t0) / 900, 1);
+      el.textContent = `${Math.round(target * (1 - Math.pow(1 - k, 3)))} €`;
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const frags = (s) => [...s.querySelectorAll('.frag')];
+
+  const show = (n, fromBack = false) => {
+    i = Math.max(0, Math.min(n, slides.length - 1));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    frags(slides[i]).forEach((f) => f.classList.toggle('on', fromBack));
+    bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+    hud.textContent = `${String(i + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    history.replaceState(null, '', `#${i + 1}`);
+  };
+
+  const help = document.querySelector('.help');
+  const hideHelp = () => help.classList.add('gone');
+  setTimeout(hideHelp, 6000);
+
+  const next = () => {
+    hideHelp();
+    const hidden = frags(slides[i]).find((f) => !f.classList.contains('on'));
+    if (hidden) {
+      hidden.classList.add('on');
+      hidden.querySelectorAll('[data-count]').forEach(countUp);
+      if (hidden.matches('[data-count]')) countUp(hidden);
+      return;
+    }
+    if (i < slides.length - 1) show(i + 1);
+  };
+
+  const prev = () => {
+    const shown = frags(slides[i]).filter((f) => f.classList.contains('on'));
+    if (shown.length) { shown[shown.length - 1].classList.remove('on'); return; }
+    if (i > 0) show(i - 1, true);
+  };
+
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1, true);
+    else if (e.key.toLowerCase() === 'f') {
+      if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.();
+    }
+  });
+  addEventListener('click', (e) => { if (e.clientX > innerWidth * 0.25) next(); else prev(); });
+  let x0 = null;
+  addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    x0 = null;
+  });
+  addEventListener('resize', fit);
+
+  fit();
+  const start = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(start) ? start - 1 : 0);
+})();
+</script>
+</body>
+</html>

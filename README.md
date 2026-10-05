@@ -25,6 +25,9 @@ README.md
 
 Dettagli in [agents/README.md](agents/README.md).
 
+## Presentazione
+Apri [presentation/index.html](presentation/index.html) nel browser (funziona offline). Frecce o spazio per avanzare, **F** per lo schermo intero.
+
 ## Avvio
 Prerequisiti: Node 22+.
 ```bash
