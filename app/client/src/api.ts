@@ -1,15 +1,6 @@
-import type { Level, Policy, QuizQuestion, SourceRef } from '../../shared/types';
-import type { CoverageCheck } from '../../shared/verify';
+import type { LibraryEntry, LibraryMeta, Level, Policy, QuizQuestion, SourceRef } from '../../shared/types';
 
-export interface ExtractResponse {
-  policy: Policy;
-  checks: CoverageCheck[];
-  sourceText?: string;
-  fallback: boolean;
-  cached: boolean;
-  error?: string;
-  ms?: number;
-}
+export type LoadedPolicy = LibraryEntry & { cached?: boolean; ms?: number };
 
 export interface Usage {
   requests: number;
@@ -17,22 +8,30 @@ export interface Usage {
   total: { llmCalls: number; cacheHits: number; noLlm: number; inputTokens: number; outputTokens: number };
 }
 
-async function post<T>(url: string, body: unknown): Promise<T> {
-  const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  const r = await fetch(url, init);
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error ?? r.statusText);
-  return r.json();
+  return (r.status === 204 ? undefined : await r.json()) as T;
 }
 
+const post = <T>(url: string, body: unknown) =>
+  request<T>(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+
 export const api = {
-  health: () => fetch('/api/health').then((r) => r.json() as Promise<{ model: string; hasApiKey: boolean }>),
-  usage: () => fetch('/api/usage').then((r) => r.json() as Promise<Usage>),
-  extractSample: (force = false) => post<ExtractResponse>('/api/extract', { force }),
-  extractFile: async (file: File) => {
+  health: () => request<{ model: string; hasApiKey: boolean }>('/api/health'),
+  usage: () => request<Usage>('/api/usage'),
+  library: () => request<LibraryMeta[]>('/api/library'),
+  openPolicy: (id: string) => request<LoadedPolicy>(`/api/library/${encodeURIComponent(id)}`),
+  uploadPolicy: (file: File, product: string, level: string, name: string) => {
     const fd = new FormData();
+    fd.append('product', product);
+    fd.append('level', level);
+    fd.append('name', name);
     fd.append('file', file);
-    const r = await fetch('/api/extract', { method: 'POST', body: fd });
-    return r.json() as Promise<ExtractResponse>;
+    return request<LoadedPolicy>('/api/library', { method: 'POST', body: fd });
   },
+  reextract: (id: string) => post<LoadedPolicy>(`/api/library/${encodeURIComponent(id)}/reextract`, {}),
+  deletePolicy: (id: string) => request<void>(`/api/library/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   explain: (policy: Policy, coverageId: string, level: Exclude<Level, 'originale'>, mode: 'riformula' | 'esempio', cost?: number) =>
     post<{ text: string; attempts: number; fallback: boolean; cached: boolean; issues: string[] }>('/api/explain', { policy, coverageId, level, mode, cost }),
   quiz: (policy: Policy) => post<{ questions: QuizQuestion[]; fallback: boolean; cached: boolean }>('/api/quiz', { policy }),

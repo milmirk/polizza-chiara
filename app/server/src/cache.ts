@@ -1,9 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const dir = process.env.CACHE_DIR ?? fileURLToPath(new URL('../.cache/', import.meta.url));
+import { cacheDir as dir } from './paths';
 const memory = new Map<string, unknown>();
 
 export const hashOf = (...parts: unknown[]) =>

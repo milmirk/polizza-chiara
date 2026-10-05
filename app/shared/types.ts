@@ -82,3 +82,22 @@ export interface QuizQuestion {
   difficulty: 1 | 2 | 3;
   source?: SourceRef;
 }
+
+export const LEVELS = ['Base', 'Plus', 'Premium'] as const;
+
+export interface LibraryMeta {
+  id: string;
+  product: string;
+  level: string;
+  name: string;
+  insurer: string;
+  uploadedAt: string;
+  coverages: number;
+  verified: number;
+}
+
+export interface LibraryEntry extends LibraryMeta {
+  policy: Policy;
+  checks: { coverageId: string; quotesFound: boolean; numbersConsistent: boolean; issues: string[] }[];
+  sourceText?: string;
+}

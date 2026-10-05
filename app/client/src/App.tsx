@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import type { QuizQuestion } from '../../shared/types';
-import { api, type ExtractResponse, type Usage } from './api';
+import { api, type LoadedPolicy, type Usage } from './api';
 import { AskStep } from './steps/AskStep';
 import { CoverageStep } from './steps/CoverageStep';
-import { PolicyStep } from './steps/PolicyStep';
+import { LibraryStep } from './steps/LibraryStep';
 import { QuizStep, type QuizResult } from './steps/QuizStep';
 import { ResultStep } from './steps/ResultStep';
 import { SimulatorStep } from './steps/SimulatorStep';
 import { VoicePicker } from './ui';
 
-const STEPS = ['La polizza', 'Quiz iniziale', 'Le garanzie', 'Quanto pago', 'Domande', 'Verifica finale'];
+const STEPS = ['Libreria', 'Quiz iniziale', 'Le garanzie', 'Quanto pago', 'Domande', 'Verifica finale'];
 const GROUPS = [
   { title: 'Inizia', steps: [0, 1] },
   { title: 'Esplora quando vuoi', steps: [2, 3, 4] },
@@ -19,7 +19,7 @@ const FONT_SIZES = [19, 22, 25];
 
 export default function App() {
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<ExtractResponse | null>(null);
+  const [data, setData] = useState<LoadedPolicy | null>(null);
   const [pool, setPool] = useState<QuizQuestion[] | null>(null);
   const [pre, setPre] = useState<QuizResult | null>(null);
   const [post, setPost] = useState<QuizResult | null>(null);
@@ -43,10 +43,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
 
-  const loaded = (d: ExtractResponse) => {
+  const loaded = (d: LoadedPolicy | null) => {
+    const samePolicy = d !== null && data !== null && d.id === data.id && d.uploadedAt === data.uploadedAt;
     setData(d);
+    if (samePolicy) return;
+    setPre(null);
+    setPost(null);
     setPool(null);
-    api.quiz(d.policy).then((r) => setPool(r.questions)).catch(() => setPool([]));
+    if (d) api.quiz(d.policy).then((r) => setPool(r.questions)).catch(() => setPool([]));
   };
 
   const restart = () => {
@@ -117,7 +121,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
-        {step === 0 && <PolicyStep data={data} aiAvailable={!!health?.hasApiKey} onLoaded={loaded} onNext={next} />}
+        {step === 0 && <LibraryStep data={data} aiAvailable={!!health?.hasApiKey} onLoaded={loaded} onNext={next} />}
         {step === 1 && data && (
           pre ? (
             <div className="space-y-4">
